@@ -6,7 +6,7 @@ Handles stat arrays, HP, and actions
 **/
 import java.util.ArrayList;
 import java.util.Arrays;
-public class RPG_Character{
+public class RPG_Character extends RPG_Interactable{
    public final RPG_Action UNARMED_STRIKE = new RPG_Action();
    public class RPG_Action{
       private String name = "Attack"; // Action name

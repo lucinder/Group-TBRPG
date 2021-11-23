@@ -5,21 +5,26 @@ Simple Item class for a character generator.
 Includes name, quantity, and value (CP) fields.
 **/
 
-public class RPG_Item{
+public class RPG_Item extends RPG_Interactable{
+   public static final String DEFAULT_USE = "But nothing happened!";
    private String name; // item name
    private int qty = 1; // item quantity
    private int value = 0; // OPTIONAL- value in CP
    public RPG_Item(){
-      name = "Placeholder";
+      super();
+      name = "DummyItem";
    }
    public RPG_Item(String name){
+      super(name, DEFAULT_USE);
       this.name = name;
    }
    public RPG_Item(String name, int quantity){
+      super(name, DEFAULT_USE);
       this.name = name;
       qty = quantity;
    }
    public RPG_Item(String name, int quantity, int value){
+      super(name, DEFAULT_USE);
       this.name = name;
       qty = quantity;
       this.value = value;

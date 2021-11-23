@@ -47,7 +47,7 @@ public class RPG_Player extends RPG_Character{
       this.pcClass = pcClass;
       
       int[] temp = RPG_Dice.randchar();
-      System.out.println("Unsorted Stat Roll: " + arrayToString(temp));
+      //System.out.println("Unsorted Stat Roll: " + arrayToString(temp));
       List<Integer> statsTemp = Arrays.stream(temp).boxed().collect(Collectors.toList());
       int[] stats = new int[]{-1, -1, -1, -1, -1, -1};
       for(int i = 0; i < 3; i++){ // set 3 most important stats by class
