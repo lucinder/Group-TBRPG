@@ -75,12 +75,12 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{ 
-         RPG_ITEMS_LIST.PLACEHOLDER_SIMPLE,
-         RPG_ITEMS_LIST.PLACEHOLDER_SIMPLE,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
-         RPG_ITEMS_LIST.ARMORS.SCALE_MAIL,
-         RPG_ITEMS_LIST.THIEVES_TOOLS,
-         RPG_ITEMS_LIST.DUNGEONEERS_PACK
+         RPG_Items_List.PLACEHOLDER_SIMPLE,
+         RPG_Items_List.PLACEHOLDER_SIMPLE,
+         RPG_Items_List.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
+         RPG_Items_List.ARMORS.SCALE_MAIL,
+         RPG_Items_List.THIEVES_TOOLS,
+         RPG_Items_List.DUNGEONEERS_PACK
       },
       MANA_HALFCASTER,
       "Intelligence"
@@ -154,9 +154,9 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.PLACEHOLDER_MARTIAL,
-         RPG_ITEMS_LIST.PLACEHOLDER_SIMPLE,
-         RPG_ITEMS_LIST.EXPLORERS_PACK
+         RPG_Items_List.PLACEHOLDER_MARTIAL,
+         RPG_Items_List.PLACEHOLDER_SIMPLE,
+         RPG_Items_List.EXPLORERS_PACK
       }
    );
    // BARD
@@ -208,11 +208,11 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.MARTIAL_WEAPONS.RAPIER,
-         RPG_ITEMS_LIST.ENTERTAINERS_PACK,
-         RPG_ITEMS_LIST.PLACEHOLDER_INSTRUMENT,
-         RPG_ITEMS_LIST.ARMORS.LEATHER_ARMOR,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.DAGGER
+         RPG_Items_List.MARTIAL_WEAPONS.RAPIER,
+         RPG_Items_List.ENTERTAINERS_PACK,
+         RPG_Items_List.PLACEHOLDER_INSTRUMENT,
+         RPG_Items_List.ARMORS.LEATHER_ARMOR,
+         RPG_Items_List.SIMPLE_WEAPONS.DAGGER
       }
    );
    // CLERIC
@@ -244,13 +244,13 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.MACE,
-         RPG_ITEMS_LIST.ARMORS.SCALE_MAIL,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
-         RPG_ITEMS_LIST.PLACEHOLDER_SIMPLE,
-         RPG_ITEMS_LIST.EXPLORERS_PACK,
-         RPG_ITEMS_LIST.ARMORS.SHIELD,
-         RPG_ITEMS_LIST.PLACEHOLDER_SYMBOL
+         RPG_Items_List.SIMPLE_WEAPONS.MACE,
+         RPG_Items_List.ARMORS.SCALE_MAIL,
+         RPG_Items_List.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
+         RPG_Items_List.PLACEHOLDER_SIMPLE,
+         RPG_Items_List.EXPLORERS_PACK,
+         RPG_Items_List.ARMORS.SHIELD,
+         RPG_Items_List.PLACEHOLDER_SYMBOL
       },
       new int[]{3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5}
    );
@@ -288,11 +288,11 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.ARMORS.SHIELD,
-         RPG_ITEMS_LIST.MARTIAL_WEAPONS.SCIMITAR,
-         RPG_ITEMS_LIST.ARMORS.LEATHER_ARMOR,
-         RPG_ITEMS_LIST.EXPLORERS_PACK,
-         RPG_ITEMS_LIST.PLACEHOLDER_DRUIDIC
+         RPG_Items_List.ARMORS.SHIELD,
+         RPG_Items_List.MARTIAL_WEAPONS.SCIMITAR,
+         RPG_Items_List.ARMORS.LEATHER_ARMOR,
+         RPG_Items_List.EXPLORERS_PACK,
+         RPG_Items_List.PLACEHOLDER_DRUIDIC
       }
    );
    // FIGHTER
@@ -325,11 +325,11 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.PLACEHOLDER_MARTIAL,
-         RPG_ITEMS_LIST.ARMORS.SHIELD,
-         RPG_ITEMS_LIST.ARMORS.CHAIN_MAIL,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
-         RPG_ITEMS_LIST.EXPLORERS_PACK
+         RPG_Items_List.PLACEHOLDER_MARTIAL,
+         RPG_Items_List.ARMORS.SHIELD,
+         RPG_Items_List.ARMORS.CHAIN_MAIL,
+         RPG_Items_List.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
+         RPG_Items_List.EXPLORERS_PACK
       }
    );
    // MONK
@@ -441,8 +441,8 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.PLACEHOLDER_SIMPLE,
-         RPG_ITEMS_LIST.EXPLORERS_PACK,
+         RPG_Items_List.PLACEHOLDER_SIMPLE,
+         RPG_Items_List.EXPLORERS_PACK,
       }
    );
    // PALADIN
@@ -455,16 +455,16 @@ public class RPG_Classes_List{
       
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.PLACEHOLDER_MARTIAL,
-         RPG_ITEMS_LIST.ARMORS.SHIELD,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.JAVELIN,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.JAVELIN,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.JAVELIN,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.JAVELIN,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.JAVELIN,
-         RPG_ITEMS_LIST.EXPLORERS_PACK,
-         RPG_ITEMS_LIST.ARMORS.CHAIN_MAIL,
-         RPG_ITEMS_LIST.PLACEHOLDER_SYMBOL
+         RPG_Items_List.PLACEHOLDER_MARTIAL,
+         RPG_Items_List.ARMORS.SHIELD,
+         RPG_Items_List.SIMPLE_WEAPONS.JAVELIN,
+         RPG_Items_List.SIMPLE_WEAPONS.JAVELIN,
+         RPG_Items_List.SIMPLE_WEAPONS.JAVELIN,
+         RPG_Items_List.SIMPLE_WEAPONS.JAVELIN,
+         RPG_Items_List.SIMPLE_WEAPONS.JAVELIN,
+         RPG_Items_List.EXPLORERS_PACK,
+         RPG_Items_List.ARMORS.CHAIN_MAIL,
+         RPG_Items_List.PLACEHOLDER_SYMBOL
       },
       MANA_HALFCASTER
    );
@@ -478,11 +478,11 @@ public class RPG_Classes_List{
       
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.ARMORS.SCALE_MAIL,
-         RPG_ITEMS_LIST.MARTIAL_WEAPONS.SHORTSWORD,
-         RPG_ITEMS_LIST.MARTIAL_WEAPONS.SHORTSWORD,
-         RPG_ITEMS_LIST.MARTIAL_WEAPONS.LONGBOW,
-         RPG_ITEMS_LIST.EXPLORERS_PACK
+         RPG_Items_List.ARMORS.SCALE_MAIL,
+         RPG_Items_List.MARTIAL_WEAPONS.SHORTSWORD,
+         RPG_Items_List.MARTIAL_WEAPONS.SHORTSWORD,
+         RPG_Items_List.MARTIAL_WEAPONS.LONGBOW,
+         RPG_Items_List.EXPLORERS_PACK
       },
       MANA_HALFCASTER,
       "Wisdom"
@@ -497,13 +497,13 @@ public class RPG_Classes_List{
       
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.MARTIAL_WEAPONS.RAPIER,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.SHORTBOW,
-         RPG_ITEMS_LIST.EXPLORERS_PACK,
-         RPG_ITEMS_LIST.ARMORS.LEATHER_ARMOR,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.DAGGER,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.DAGGER,
-         RPG_ITEMS_LIST.THIEVES_TOOLS
+         RPG_Items_List.MARTIAL_WEAPONS.RAPIER,
+         RPG_Items_List.SIMPLE_WEAPONS.SHORTBOW,
+         RPG_Items_List.EXPLORERS_PACK,
+         RPG_Items_List.ARMORS.LEATHER_ARMOR,
+         RPG_Items_List.SIMPLE_WEAPONS.DAGGER,
+         RPG_Items_List.SIMPLE_WEAPONS.DAGGER,
+         RPG_Items_List.THIEVES_TOOLS
       }
    );
    // SORCERER
@@ -540,11 +540,11 @@ public class RPG_Classes_List{
          ),
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
-         RPG_ITEMS_LIST.PLACEHOLDER_ARCANE,
-         RPG_ITEMS_LIST.EXPLORERS_PACK,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.DAGGER,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.DAGGER
+         RPG_Items_List.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
+         RPG_Items_List.PLACEHOLDER_ARCANE,
+         RPG_Items_List.EXPLORERS_PACK,
+         RPG_Items_List.SIMPLE_WEAPONS.DAGGER,
+         RPG_Items_List.SIMPLE_WEAPONS.DAGGER
       }
    );
    // WARLOCK
@@ -576,13 +576,13 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
-         RPG_ITEMS_LIST.PLACEHOLDER_ARCANE,
-         RPG_ITEMS_LIST.DUNGEONEERS_PACK,
-         RPG_ITEMS_LIST.ARMORS.LEATHER_ARMOR,
-         RPG_ITEMS_LIST.PLACEHOLDER_SIMPLE,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.DAGGER,
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.DAGGER
+         RPG_Items_List.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
+         RPG_Items_List.PLACEHOLDER_ARCANE,
+         RPG_Items_List.DUNGEONEERS_PACK,
+         RPG_Items_List.ARMORS.LEATHER_ARMOR,
+         RPG_Items_List.PLACEHOLDER_SIMPLE,
+         RPG_Items_List.SIMPLE_WEAPONS.DAGGER,
+         RPG_Items_List.SIMPLE_WEAPONS.DAGGER
       }
    );
    // WIZARD
@@ -609,10 +609,10 @@ public class RPG_Classes_List{
          )
       },
       new RPG_Item[]{
-         RPG_ITEMS_LIST.SIMPLE_WEAPONS.QUARTERSTAFF,
-         RPG_ITEMS_LIST.PLACEHOLDER_ARCANE,
-         RPG_ITEMS_LIST.EXPLORERS_PACK,
-         RPG_ITEMS_LIST.SPELLBOOK
+         RPG_Items_List.SIMPLE_WEAPONS.QUARTERSTAFF,
+         RPG_Items_List.PLACEHOLDER_ARCANE,
+         RPG_Items_List.EXPLORERS_PACK,
+         RPG_Items_List.SPELLBOOK
       },
       "Intelligence"
    );

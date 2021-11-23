@@ -9,6 +9,12 @@ public class RPG_Dungeon{
    private static RPG_Room DUNGEON_ROOM_CURRENT;
    private RPG_Player player;
    
+   public RPG_Dungeon(RPG_Room head, RPG_Player p){
+      player = p;
+      DUNGEON_ROOM_HEAD = head;
+      DUNGEON_ROOM_CURRENT = head;
+   }
+   
    // move to an adjacent, open square
    public void move(String dir){
       if(dir.equals("N")){
