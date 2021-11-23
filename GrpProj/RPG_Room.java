@@ -6,7 +6,7 @@ A Room class, containing a list of interactables and defined set of exits.
 **/
 import java.util.ArrayList;
 public class RPG_Room {
-   private int roomNumber = 0;
+   private String roomNumber = "0";
    // Room #0 is the generic ID for a "wall" or placeholder room.
    // Room #1, the starting room, must have a path to every other room in the dungeon with at least 1 door.
    private String roomID = "DefaultRoomID"; 
@@ -37,11 +37,11 @@ public class RPG_Room {
    private ArrayList<RPG_Interactable> objects; // contains all characters, traps, treasure/items, and enemies or shopkeeps
    
    public RPG_Room(){}
-   public RPG_Room(int roomNumber){ this.roomNumber = roomNumber; }
+   public RPG_Room(int roomNumber){ this.roomNumber = ""+roomNumber; }
    public RPG_Room(String id){
       roomID = id;
       String[] idParser = id.split("_");
-      roomNumber = Integer.parseInt(idParser[0]);
+      roomNumber = idParser[0];
       roomType = idParser[1];
       // once we add a method for processing object id strings- parseObjects(String id)- add that here
    }
@@ -116,25 +116,25 @@ public class RPG_Room {
    public RPG_Room getRight(){ return right; }
    public void setDown(RPG_Room newRoom){
       this.down = newRoom;
-      if(!newRoom.getUp().getID().equals(roomID)){ // infinite loop prevention
+      if(newRoom.getUp() == null || !newRoom.getUp().getID().equals(roomID)){ // infinite loop prevention
          newRoom.setUp(this);
       }
    }
    public void setUp(RPG_Room newRoom){
       this.up = newRoom;
-      if(!newRoom.getDown().getID().equals(roomID)){ // infinite loop prevention
+      if(newRoom.getDown() == null || !newRoom.getDown().getID().equals(roomID)){ // infinite loop prevention
          newRoom.setDown(this);
       }
    }
    public void setLeft(RPG_Room newRoom){
       this.left = newRoom;
-      if(!newRoom.getRight().getID().equals(roomID)){ // infinite loop prevention
+      if(newRoom.getRight() == null || !newRoom.getRight().getID().equals(roomID)){ // infinite loop prevention
          newRoom.setRight(this);
       }
    }
    public void setRight(RPG_Room newRoom){
       this.right = newRoom;
-      if(!newRoom.getLeft().getID().equals(roomID)){ // infinite loop prevention
+      if(newRoom.getLeft() == null || !newRoom.getLeft().getID().equals(roomID)){ // infinite loop prevention
          newRoom.setLeft(this);
       }
    }
@@ -153,10 +153,10 @@ public class RPG_Room {
       this.dialogue = dialogue;
    }
    
-   public RPG_Room getRoom(int key){
+   public RPG_Room getRoom(String key){
    // recursive sequential search in down-right order
    // DOES NOT check up or left, so search must start in top left
-      if(roomNumber == key){ return this; }
+      if(roomNumber.equals(key)){ return this; }
       else if(hasDown()){
          RPG_Room found = down.getRoom(key);
          if(found != null){ return found; }
