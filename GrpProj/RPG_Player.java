@@ -17,9 +17,6 @@ import java.util.Scanner;
 public class RPG_Player extends RPG_Character{
    public class RPG_Optional_Race_Features{
       private static boolean hasDarkvision = false;
-      private static ArrayList<String> damageResistances = new ArrayList<String>(); // damage type resistances - default none
-      private static ArrayList<String> conditionImmunities = new ArrayList<String>(); // condition immunities
-      private static ArrayList<String> conditionAdvantages = new ArrayList<String>(); // condition save advantages
       private static String breathWeaponType = "None"; // breath weapon type for dragonborn - default none (no breath weapon)
       private static int[] breathWeaponDice = {2,6}; // breath weapon damage dice - 2d6 default. should increase at certain levels
       private static boolean breathWeaponSaveDex = true; // is the breath weapon save dex (true) or con (false)? default true
@@ -33,7 +30,7 @@ public class RPG_Player extends RPG_Character{
       private static boolean savage = false; // character has the savage attacks feature?
    }
    
-   private int level = 1;
+   private static int level = 1;
    private RPG_Race pcRace = new RPG_Race();
    private RPG_Class pcClass = new RPG_Class();
    
@@ -113,7 +110,7 @@ public class RPG_Player extends RPG_Character{
             RPG_Optional_Race_Features.hasDarkvision = true;
          }
          if(rf.getName().equals("Hellish Resistance")){
-            RPG_Optional_Race_Features.damageResistances.add("Fire");
+            addResistance("Fire");
          }
          if(rf.getName().equals("Lucky")){
             RPG_Optional_Race_Features.lucky = true; // lucky
@@ -122,15 +119,15 @@ public class RPG_Player extends RPG_Character{
             chooseAncestry();
          }
          if(rf.getName().equals("Dwarven Resilience")){
-            RPG_Optional_Race_Features.damageResistances.add("Poison");
-            RPG_Optional_Race_Features.conditionAdvantages.add("Poison");
+            addResistance("Poison");
+            addConditionAdvantage("Poison");
          }
          if(rf.getName().equals("Fey Ancestry")){
-            RPG_Optional_Race_Features.conditionAdvantages.add("Charmed");
-            RPG_Optional_Race_Features.conditionImmunities.add("Sleep");
+            addConditionAdvantage("Charmed");
+            addConditionImmunity("Sleep");
          }
          if(rf.getName().equals("Brave")){
-            RPG_Optional_Race_Features.conditionAdvantages.add("Frightened");
+            addConditionAdvantage("Frightened");
          }
          // tba: infernal legacy
       }
@@ -161,24 +158,24 @@ public class RPG_Player extends RPG_Character{
                typeChosen = true;
                if(next.toUpperCase().equals("RED") || next.equals("1") || next.equals("[1]")){
                   RPG_Optional_Race_Features.breathWeaponType = "Fire";
-                  RPG_Optional_Race_Features.damageResistances.add("Fire");
+                  addResistance("Fire");
                }
                else if(next.toUpperCase().equals("GREEN") || next.equals("2") || next.equals("[2]")){
                   RPG_Optional_Race_Features.breathWeaponType = "Poison";
-                  RPG_Optional_Race_Features.damageResistances.add("Poison");
+                  addResistance("Poison");
                   RPG_Optional_Race_Features.breathWeaponSaveDex = false;
                }
                else if(next.toUpperCase().equals("BLUE") || next.equals("3") || next.equals("[3]")){
                   RPG_Optional_Race_Features.breathWeaponType = "Lightning";
-                  RPG_Optional_Race_Features.damageResistances.add("Lightning");
+                  addResistance("Lightning");
                }
                else if(next.toUpperCase().equals("BLACK") || next.equals("4") || next.equals("[4]")){
                   RPG_Optional_Race_Features.breathWeaponType = "Acid";
-                  RPG_Optional_Race_Features.damageResistances.add("Acid");
+                  addResistance("Acid");
                }  
                else if(next.toUpperCase().equals("WHITE") || next.equals("5") || next.equals("[5]")){
-                  RPG_Optional_Race_Features.breathWeaponType = "Cold";
-                  RPG_Optional_Race_Features.damageResistances.add("Cold");
+                  RPG_Optional_Race_Features.breathWeaponType = "Ice";
+                  addResistance("Ice");
                   RPG_Optional_Race_Features.breathWeaponSaveDex = false;
                }
                else {
@@ -190,24 +187,24 @@ public class RPG_Player extends RPG_Character{
                typeChosen = true;
                if(next.toUpperCase().equals("GOLD") || next.equals("1") || next.equals("[1]")){
                   RPG_Optional_Race_Features.breathWeaponType = "Fire";
-                  RPG_Optional_Race_Features.damageResistances.add("Fire");
+                  addResistance("Fire");
                }
                else if(next.toUpperCase().equals("SILVER") || next.equals("2") || next.equals("[2]")){
-                  RPG_Optional_Race_Features.breathWeaponType = "Cold";
-                  RPG_Optional_Race_Features.damageResistances.add("Cold");
+                  RPG_Optional_Race_Features.breathWeaponType = "Ice";
+                  addResistance("Ice");
                   RPG_Optional_Race_Features.breathWeaponSaveDex = false;
                }
                else if(next.toUpperCase().equals("BRONZE") || next.equals("3") || next.equals("[3]")){
                   RPG_Optional_Race_Features.breathWeaponType = "Lightning";
-                  RPG_Optional_Race_Features.damageResistances.add("Lightning");
+                  addResistance("Lightning");
                }
                else if(next.toUpperCase().equals("BRASS") || next.equals("4") || next.equals("[4]")){
                   RPG_Optional_Race_Features.breathWeaponType = "Fire";
-                  RPG_Optional_Race_Features.damageResistances.add("Fire");
+                  addResistance("Fire");
                }  
                else if(next.toUpperCase().equals("COPPER") || next.equals("5") || next.equals("[5]")){
                   RPG_Optional_Race_Features.breathWeaponType = "Acid";
-                  RPG_Optional_Race_Features.damageResistances.add("Acid");
+                  addResistance("Acid");
                }
                else {
                   typeChosen = false;
@@ -224,7 +221,7 @@ public class RPG_Player extends RPG_Character{
    }
    
    // prof bonus
-   public int getProficiencyBonus(){
+   public static int getProficiencyBonus(){
       int profBonus = 2;
       if(level > 4){
          if(level < 9){

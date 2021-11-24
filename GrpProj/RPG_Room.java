@@ -34,7 +34,7 @@ public class RPG_Room {
    private RPG_Room down;
    private RPG_Room left;
    private RPG_Room right;
-   private ArrayList<RPG_Interactable> objects; // contains all characters, traps, treasure/items, and enemies or shopkeeps
+   private ArrayList<RPG_Interactable> objects = new ArrayList<RPG_Interactable>(); // contains all characters, traps, treasure/items, and enemies or shopkeeps
    
    public RPG_Room(){}
    public RPG_Room(int roomNumber){ this.roomNumber = ""+roomNumber; }
@@ -44,6 +44,9 @@ public class RPG_Room {
       roomNumber = idParser[0];
       roomType = idParser[1];
       // once we add a method for processing object id strings- parseObjects(String id)- add that here
+      if(roomType.equals("En") || roomType.equals("EnTrap") || roomType.equals("EnTres") || roomType.equals("EnTrapTres")){
+         addRandomEnemy();
+      }
    }
    
    // Getters & Setters
@@ -142,8 +145,18 @@ public class RPG_Room {
    public ArrayList<RPG_Interactable> getObjects() {
       return objects;
    }
-   public void addObject(RPG_Interactable newObject){
-      objects.add(newObject);
+   
+   public void addRandomEnemy(){
+      int cr = 0;
+      if(roomNumber.charAt(roomNumber.length()-1) == 'n' || roomNumber.charAt(roomNumber.length()-1) == 's'){
+         cr = Integer.parseInt(roomNumber.substring(0,roomNumber.length()-1)); // cut off last character
+      } else {
+         cr = Integer.parseInt(roomNumber);
+      }
+      cr /= RPG_Dungeon.CR_DIVISION;
+      // TBA: Selection based on cr
+      RPG_Enemy enemy = RPG_Enemies_List.test[(int)(Math.random()*RPG_Enemies_List.test.length)];
+      objects.add(enemy); // add enemy to objects array
    }
    
    public String getDialogue() {
@@ -165,6 +178,13 @@ public class RPG_Room {
          if(found != null){ return found; }
       }
       return null;
+   }
+   
+
+   public void addObject(RPG_Interactable newObject){
+      if(!objects.contains(newObject)){ // dupe catcher
+         objects.add(newObject);
+      }
    }
    
 }

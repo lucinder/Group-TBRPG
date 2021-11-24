@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 public class RPG_Game{
    public static void start() throws IOException{
       int levels = 9;
