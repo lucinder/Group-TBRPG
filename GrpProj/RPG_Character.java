@@ -7,9 +7,21 @@ Handles stat arrays, HP, and actions
 import java.util.ArrayList;
 import java.util.Arrays;
 public class RPG_Character extends RPG_Interactable{
-   public final RPG_Action UNARMED_STRIKE = new RPG_Action();
-   public class RPG_Action{
-      private String name = "Attack"; // Action name
+   public static final RPG_Action DONOTHING = new RPG_Action();
+   public static final RPG_Attack UNARMED_STRIKE = new RPG_Attack();
+   
+   public static class RPG_Action{
+      private static String name = "Nothing"; // Action name
+      private static String description = " did nothing.";
+      public RPG_Action(){}
+      public RPG_Action(String name){ this.name = name; }
+      public RPG_Action(String name, String desc){ this.name = name; this.description = desc; }
+      public String getName(){ return name; }
+      public String getDesc(){ return description; }
+      public void act(RPG_Character user, RPG_Character target){ say(user.getName()); } // discard target for generic actions
+      public void say(String user){ System.out.println(user + description); }
+   }
+   public static class RPG_Attack extends RPG_Action{
       private String type = "Damage";
       // Action Types:
       // Damage- standard (typeless) damage, used for all nonmagical weapons
@@ -23,46 +35,47 @@ public class RPG_Character extends RPG_Interactable{
       private int[] dice = {1,1}; // Damage or Healing Dice stored in XdY format. Default = 1d1 = 1
       private int modifier = 0; // Damage modifier
       private int toHit = getProficiencyBonus(); // To-hit modifier (on top of the existing damage modifier)
-      public RPG_Action(){}
-      public RPG_Action(String name, String type){
-         this.name = name;
+      public RPG_Attack(){super("Unarmed Strike"," swung its fist.");}
+      public RPG_Attack(String name, String type){
+         super(name, " used " + name);
          this.type = type;
       }
-      public RPG_Action(int[] dice){ // Default attack with different damage
+      public RPG_Attack(int[] dice){ // Default attack with different damage
+         super("Unarmed Strike"," swung its fist.");
          this.dice = dice;
       }
-      public RPG_Action(String name, String type, int[] dice, int modifier){
-         this.name = name;
+      public RPG_Attack(String name, String type, int[] dice, int modifier){
+         super(name, " used " + name);
          this.type = type;
          this.dice = dice;
          this.modifier = modifier;
       }
-      public RPG_Action(String name, String type, int[] dice, int modifier, int proficiency){
-         this.name = name;
+      public RPG_Attack(String name, String type, int[] dice, int modifier, int proficiency){
+         super(name, " used " + name + ".");
          this.type = type;
          this.dice = dice;
          this.modifier = modifier;
          this.toHit = proficiency;
       }
-      public RPG_Action(RPG_Weapon weapon, int modifier, int proficiency){
-         this.name = weapon.getName() + " Attack";
+      public RPG_Attack(RPG_Weapon weapon, int modifier, int proficiency){
+         super(weapon.getName() + " Attack"," swung their " + weapon.getName() + ".");
          this.type = weapon.getDamageType();
          this.dice = weapon.getDamageDice();
          this.modifier = modifier + weapon.getMagicBonus();
          this.toHit = proficiency;
       }
-      public String getName(){ return name; }
       public String getType(){ return type; }
       public int[] getDice(){ return dice; }
       public int rollToHit(){
          int roll = RPG_Dice.XdY(1,20) + modifier + toHit;
-         System.out.print("Roll to hit: " + roll + " "); // testing purposes only
+         // System.out.print("Roll to hit: " + roll + " "); // testing purposes only
          return roll;
       }
       public boolean isCrit(int roll){ return (roll - (modifier + toHit)) == 20; }
       public int rollDamage(){
          return RPG_Dice.XdY(dice[0], dice[1]) + modifier;
       }
+      /**
       public int fullRoll(int AC){
          int hitRoll = rollToHit();
          if(hitRoll > AC){
@@ -77,29 +90,53 @@ public class RPG_Character extends RPG_Interactable{
             System.out.println("But it missed!");
          }
          return 0;
-      }
+      } **/
       public boolean equals(Object otherItem){
-         if(otherItem instanceof RPG_Action){
-            RPG_Action other = (RPG_Action)otherItem;
-            return name.equals(other.getName()) && type.equals(other.getType()) && Arrays.equals(dice, other.getDice());
+         if(otherItem instanceof RPG_Attack){
+            RPG_Attack other = (RPG_Attack)otherItem;
+            return super.name.equals(other.getName()) && type.equals(other.getType()) && Arrays.equals(dice, other.getDice());
          }
          return false;
       }
-      public int say(String user, String target, int AC){
-         int roll = 0;
+      public void act(RPG_Character user, RPG_Character target){
+         int hitRoll = rollToHit();
+         if(hitRoll > target.getAC()){
+            int damage = rollDamage();
+            if(target.getResistances().contains(this.type)){ // is the damage resisted?
+               damage /= 2;
+            } else if(target.getWeaknesses().contains(this.type)){ // is the target weak to the damage?
+               damage *= 2;
+            }
+            if(isCrit(hitRoll)){ // double damage on a crit
+               damage *= 2; 
+               say(user.getName(), target.getName(), damage, true, true);
+            } else { 
+               say(user.getName(), target.getName(), damage, true, false);
+            }
+            target.takeDamage(damage);
+         } else {
+            say(user.getName(), target.getName(), 0, false, false);
+         }
+      }
+      public void say(String user, String target, int dmgValue, boolean isHit, boolean isCrit){
          if (type.equals("Healing")){
             System.out.print(user + " heals the " + target + "! ");
-            roll = rollDamage();
-            System.out.println(target + " regained " + roll + " HP!");
+            System.out.println(target + " regained " + dmgValue + " HP!");
          } else {
-            System.out.print(user + " attacks the " + target + "! ");
-            roll = fullRoll(AC);
+            System.out.println(user + super.getDesc());
+            if(isHit){
+               if(isCrit){
+                  System.out.println("Critical hit!");
+               }
+               System.out.println(dmgValue + " damage!"); // X _ damage!
+            } else {
+               System.out.println("But it missed...");
+            }
          }
-         return roll;
       }
    }
    
-   public class RPG_Buff extends RPG_Action{
+   public class RPG_Buff extends RPG_Attack{
       private int[] dice = {0,0}; // Buffs/nerfs use no dice by default
       private int[] statModifiers = {0,0,0,0,0,0}; // no stat modifiers by default
       private String[] typesGained = {}; // type resistances gained (Nerf subclass treats these as weaknesses)
@@ -139,6 +176,28 @@ public class RPG_Character extends RPG_Interactable{
             return name.equals(other.getName()) && super.getType().equals(other.getType()) && Arrays.equals(statModifiers, other.getStatModifiers()) && Arrays.equals(typesGained, other.getTypes());
          }
          return false;
+      }
+      public void act(RPG_Character target){
+         if(getStatModifiers()[0] != 0){ // add stat modifiers
+            target.addToStr(getStatModifiers()[0]);
+         } else if (getStatModifiers()[1] != 0){
+            target.addToDex(getStatModifiers()[1]);
+         } else if(getStatModifiers()[2] != 0){
+            target.addToCon(getStatModifiers()[2]);
+         } else if(getStatModifiers()[3] != 0){
+            target.addToInt(getStatModifiers()[3]);
+         } else if(getStatModifiers()[4] != 0){
+            target.addToWis(getStatModifiers()[4]);
+         } else if(getStatModifiers()[5] != 0){
+            target.addToCha(getStatModifiers()[5]);
+         } else {
+            target.addMaxHP(getStatModifiers()[6]);
+         }
+         if(getTypes().length > 0){ // add type weaknesses
+            for(String s : getTypes()){
+               target.addResistance(s);
+            }
+         }
       }
       public int[] say(String user, String target){
          System.out.print(user + " used " + super.getName() + " on the " + target + "! ");
@@ -181,6 +240,28 @@ public class RPG_Character extends RPG_Interactable{
       public RPG_Debuff(String name, int[] statModifiers, String[] weaknessesGained){
          super(name, "Debuff", statModifiers, weaknessesGained);
       }
+      public void act(RPG_Character target){
+         if(super.getStatModifiers()[0] != 0){ // add stat modifiers
+            target.addToStr(super.getStatModifiers()[0]);
+         } else if (super.getStatModifiers()[1] != 0){
+            target.addToDex(super.getStatModifiers()[1]);
+         } else if(super.getStatModifiers()[2] != 0){
+            target.addToCon(super.getStatModifiers()[2]);
+         } else if(super.getStatModifiers()[3] != 0){
+            target.addToInt(super.getStatModifiers()[3]);
+         } else if(super.getStatModifiers()[4] != 0){
+            target.addToWis(super.getStatModifiers()[4]);
+         } else if(super.getStatModifiers()[5] != 0){
+            target.addToCha(super.getStatModifiers()[5]);
+         } else {
+            target.addMaxHP(super.getStatModifiers()[6]);
+         }
+         if(super.getTypes().length > 0){ // add type weaknesses
+            for(String s : super.getTypes()){
+               target.addWeakness(s);
+            }
+         }
+      }
       public int[] say(String user, String target){
          System.out.print(user + " used " + getName() + " on the " + target + "! ");
          if(super.getStatModifiers()[0] != 0){
@@ -219,22 +300,23 @@ public class RPG_Character extends RPG_Interactable{
    private int AC = 10;
    private ArrayList<RPG_Item> inventory = new ArrayList<RPG_Item>();
    private ArrayList<RPG_Action> actions = new ArrayList<RPG_Action>();
+   private ArrayList<String> damageResistances = new ArrayList<String>(); // damage type resistances - default none
+   private ArrayList<String> damageWeaknesses = new ArrayList<String>();
+   private ArrayList<String> conditionImmunities = new ArrayList<String>(); // condition immunities
+   private ArrayList<String> conditionAdvantages = new ArrayList<String>(); // condition save advantages
    public RPG_Character(){}
    public RPG_Character(String name){
       this.name = name;
-      actions.add(new RPG_Action());
    }
    public RPG_Character(String name, int hpMax){
       this.name = name;
       this.hpMax = hpMax;
       this.hpCur = hpMax;
-      actions.add(new RPG_Action()); // Every character should get a default unarmed attack
    }
    public RPG_Character(String name, int hpCurrent, int hpMax){
       this.name = name;
       this.hpMax = hpMax;
       this.hpCur = hpCurrent;
-      actions.add(new RPG_Action());
    }
    public RPG_Character(String name, int hpMax, int[] stats, int AC){
       this.name = name;
@@ -242,7 +324,6 @@ public class RPG_Character extends RPG_Interactable{
       this.hpCur = hpMax;
       this.stats = stats;
       this.AC = AC;
-      actions.add(new RPG_Action());
    }
    public RPG_Character(String name, int hpMax, int[] stats, int AC, RPG_Item[] inventory){
       this.name = name;
@@ -255,6 +336,7 @@ public class RPG_Character extends RPG_Interactable{
       }
       loadInventory();
    }
+   
    public RPG_Character(String name, int hpMax, int[] stats, int AC,  RPG_Action[] actions){
       this.name = name;
       this.hpMax = hpMax;
@@ -282,6 +364,7 @@ public class RPG_Character extends RPG_Interactable{
    // getters setters
    public String getName(){ return name; }
    public int getMaxHP(){ return hpMax; }
+   public int getHP(){ return getCurrentHP(); } // pseudooverload for simplicity
    public int getCurrentHP(){ return hpCur; }
    public void setCurrentHP(int newHP){
       if(newHP < hpMax){
@@ -298,6 +381,37 @@ public class RPG_Character extends RPG_Interactable{
    public int getAC(){ return AC; }
    public void setAC(int newAC){ this.AC = newAC; }
    public int[] getStats(){ return stats; }
+   public ArrayList<String> getResistances(){ return damageResistances; }
+   public ArrayList<String> getWeaknesses(){ return damageWeaknesses; }
+   public void setStats(int[] newStats){ stats = newStats; }
+   public void addToStr(int toAdd){ stats[0] += toAdd; }
+   public void addToDex(int toAdd){ stats[1] += toAdd; }
+   public void addToCon(int toAdd){ stats[2] += toAdd; }
+   public void addToInt(int toAdd){ stats[3] += toAdd; }
+   public void addToWis(int toAdd){ stats[4] += toAdd; }
+   public void addToCha(int toAdd){ stats[5] += toAdd; }
+   public void addMaxHP(int toAdd){ setMaxHP(getMaxHP() + toAdd); }
+   // add stuff to the resistance/weakness/immunity lists
+   public void addResistance(String toAdd){
+      if(!damageResistances.contains(toAdd)){
+         damageResistances.add(toAdd);
+      }
+   }
+   public void addWeakness(String toAdd){
+      if(!damageWeaknesses.contains(toAdd)){
+         damageWeaknesses.add(toAdd);
+      }
+   }
+   public void addConditionAdvantage(String toAdd){
+      if(!conditionAdvantages.contains(toAdd)){
+         conditionAdvantages.add(toAdd);
+      }
+   }
+   public void addConditionImmunity(String toAdd){
+      if(!conditionImmunities.contains(toAdd)){
+         conditionImmunities.add(toAdd);
+      }
+   }
    public ArrayList<RPG_Item> getInventory(){ return inventory; }
    public ArrayList<RPG_Action> getActions(){ return actions; }
    public boolean hasAction(String actionName){
@@ -315,6 +429,9 @@ public class RPG_Character extends RPG_Interactable{
          }
       }
       return null;
+   }
+   public void act(RPG_Action action, RPG_Character target){
+      
    }
  
    public void takeDamage(int damage){
@@ -348,7 +465,7 @@ public class RPG_Character extends RPG_Interactable{
             } else {
                mod += RPG_Dice.getModifier(stats[0]); // use str mod
             }
-            RPG_Action weaponattack = new RPG_Action(weapon, mod, getProficiencyBonus());
+            RPG_Attack weaponattack = new RPG_Attack(weapon, mod, getProficiencyBonus());
             if(hasAction(weaponattack.getName())){
                replaceAction(weaponattack.getName(),weaponattack);
             } else if(actions.contains(UNARMED_STRIKE)){
@@ -391,7 +508,7 @@ public class RPG_Character extends RPG_Interactable{
       }
    }
    
-   public int getProficiencyBonus(){ // Default character prof bonus is 2; modified to be based on CR or level based on subclass
+   public static int getProficiencyBonus(){ // Default character prof bonus is 2; modified to be based on CR or level based on subclass
       return 2;
    }
    
