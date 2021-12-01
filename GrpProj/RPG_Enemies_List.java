@@ -22,6 +22,20 @@ public class RPG_Enemies_List{
       new RPG_Item[]{},
       0.125
    );
+   static RPG_Enemy BOSSDUMMY = new RPG_Enemy(
+      "Boss Dummy",
+      60,
+      new int[]{18,13,16,10,12,14},
+      14,
+      new RPG_Character.RPG_Action[]{
+         RPG_Character.UNARMED_STRIKE
+      },
+      new RPG_Item[]{
+         RPG_Items_List.MARTIAL_WEAPONS.LONGSWORD,
+         RPG_Items_List.MARTIAL_WEAPONS.LONGBOW
+      },
+      4
+   );
 
    public static RPG_Enemy[] test = new RPG_Enemy[]{DUMMY, ANGRYDUMMY};
 }

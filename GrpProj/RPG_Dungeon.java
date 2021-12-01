@@ -53,9 +53,11 @@ public class RPG_Dungeon{
          i.interactionEvent();
          if(i instanceof RPG_Enemy){
             RPG_Enemy en = (RPG_Enemy)i;
-            int[] preCombatStats = player.getStats();
-            combat(player, en);
-            player.setStats(preCombatStats); // revert any temporary stat changes
+            if(en.getHP() > 0){
+               int[] preCombatStats = player.getStats();
+               combat(player, en);
+               player.setStats(preCombatStats); // revert any temporary stat changes
+            }
          }
       }
    }
@@ -162,6 +164,7 @@ public class RPG_Dungeon{
          System.exit(0);
       } else {
          System.out.println("YOU WON!");
+         enemy.die(); // sets the enemy interaction to a corpse
       }
    }
 }
