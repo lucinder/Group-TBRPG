@@ -5,10 +5,16 @@ ENEMY class
 Handles deciding a proficiency bonus based on CR
 To be added: action randomization (selection) and execution in-battle
 **/
+import java.util.ArrayList;
 public class RPG_Enemy extends RPG_Character{
    private static double CR = 0.25; // enemy CR: default 1/4
    private boolean pacified = false;
    public RPG_Enemy(){super();}
+   public RPG_Enemy(RPG_Enemy toCopy){ // copy constructor
+      super(toCopy.getName(), toCopy.getMaxHP(), toCopy.getStats(), toCopy.getAC(), toCopy.getActionsArray(), toCopy.getInventoryArray());
+      this.CR = toCopy.getCR();
+      setDialogue("A wild " + toCopy.getName() + " appeared!");
+   }
    public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, double CR){
       super(name, hpMax, stats, AC, actions);
       this.CR = CR;
@@ -24,6 +30,7 @@ public class RPG_Enemy extends RPG_Character{
       this.CR = CR;
       setDialogue("A wild " + name + " appeared!");
    }
+   public static double getCR(){ return CR; }
    public static int getProficiencyBonus(){
       return 2 + (int)(sgn(CR - 1) * (Math.abs(CR - 1)/4));
    }
@@ -38,4 +45,5 @@ public class RPG_Enemy extends RPG_Character{
    }
    public boolean isPacified(){ return pacified; } // is the enemy pacified (beat fight without killing)?
    public void pacify(){ pacified = true; } // pacify the enemy
+   public void die(){ setDialogue("The corpse of a " + getName() + " lays rotting."); }
 }

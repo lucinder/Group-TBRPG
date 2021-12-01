@@ -47,6 +47,9 @@ public class RPG_Room {
       if(roomType.equals("En") || roomType.equals("EnTrap") || roomType.equals("EnTres") || roomType.equals("EnTrapTres")){
          addRandomEnemy();
       }
+      if(roomType.equals("Boss")){
+         addRandomBoss();
+      }
    }
    
    // Getters & Setters
@@ -155,8 +158,12 @@ public class RPG_Room {
       }
       cr /= RPG_Dungeon.CR_DIVISION;
       // TBA: Selection based on cr
-      RPG_Enemy enemy = RPG_Enemies_List.test[(int)(Math.random()*RPG_Enemies_List.test.length)];
+      RPG_Enemy enemy = new RPG_Enemy(RPG_Enemies_List.test[(int)(Math.random()*RPG_Enemies_List.test.length)]); // send an existing enemy to a copy constructor so each can be treated differently
       objects.add(enemy); // add enemy to objects array
+   }
+   
+   public void addRandomBoss(){
+      objects.add(new RPG_Enemy(RPG_Enemies_List.BOSSDUMMY));
    }
    
    public String getDialogue() {

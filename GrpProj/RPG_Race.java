@@ -5,6 +5,7 @@ A class to store D&D-style Races
 Includes the following fields: name, racial ability score improvements, and feature list
 **/
 import java.io.IOException;
+import java.util.Scanner;
 public class RPG_Race{
    public static class RaceFeature{
       private String featureName; // feature name
@@ -130,12 +131,14 @@ public class RPG_Race{
          for(int i = 0; i < baseStats.length; i++){
             newStats[i] += asi[i];
          }
+         Scanner input = new Scanner(System.in);
          for(int i = baseStats.length; i < asi.length; i++){
             // prompt user to choose which stat to allocate
             System.out.println("Your race lets you allocate a " + asi[i] + " to any stat.");
             System.out.println("Allocate " + asi[i] + " to which stat?");
-            System.out.println("[1] Strength\n[2] Dexterity\n[3] Contitution\n[4] Intelligence\n[5] Wisdom\n[6] Charisma");
-            int stat = Character.getNumericValue((char)System.in.read());
+            System.out.println("[0] Strength\n[1] Dexterity\n[2] Contitution\n[3] Intelligence\n[4] Wisdom\n[5] Charisma");
+            char choice = input.nextLine().charAt(0);
+            int stat = Character.getNumericValue(choice);
             if(stat >= baseStats.length || (newStats[stat]+asi[i]) > 20){
                System.out.println("Can't allocate!");
                i--; // keep for loop going until an allocation is made

@@ -11,13 +11,15 @@ public class RPG_Character extends RPG_Interactable{
    public static final RPG_Attack UNARMED_STRIKE = new RPG_Attack();
    
    public static class RPG_Action{
-      private static String name = "Nothing"; // Action name
-      private static String description = " did nothing.";
-      public RPG_Action(){}
-      public RPG_Action(String name){ this.name = name; }
+      private static String name; // Action name
+      private static String description;
+      public RPG_Action(){ this.name = "Nothing"; this.description = " did nothing."; }
+      public RPG_Action(String name){ this.name = name; this.description = " did nothing."; }
       public RPG_Action(String name, String desc){ this.name = name; this.description = desc; }
       public String getName(){ return name; }
       public String getDesc(){ return description; }
+      public void setName(String newName){ this.name = newName; }
+      public void setDesc(String newDesc){ this.description = newDesc; }
       public void act(RPG_Character user, RPG_Character target){ say(user.getName()); } // discard target for generic actions
       public void say(String user){ System.out.println(user + description); }
    }
@@ -59,6 +61,9 @@ public class RPG_Character extends RPG_Interactable{
       }
       public RPG_Attack(RPG_Weapon weapon, int modifier, int proficiency){
          super(weapon.getName() + " Attack"," swung their " + weapon.getName() + ".");
+         if(weapon.isRanged()){
+            setDesc(" shot with their " + weapon.getName() + ".");
+         }
          this.type = weapon.getDamageType();
          this.dice = weapon.getDamageDice();
          this.modifier = modifier + weapon.getMagicBonus();
@@ -73,7 +78,10 @@ public class RPG_Character extends RPG_Interactable{
       }
       public boolean isCrit(int roll){ return (roll - (modifier + toHit)) == 20; }
       public int rollDamage(){
-         return RPG_Dice.XdY(dice[0], dice[1]) + modifier;
+         int damage = RPG_Dice.XdY(dice[0], dice[1]) + modifier;
+         if(modifier < 1){ damage = RPG_Dice.XdY(dice[0], dice[1]); } // discard negative modifiers
+         if(damage < 0){ damage = 0; } // discard negative damage
+         return damage;
       }
       /**
       public int fullRoll(int AC){
@@ -414,6 +422,24 @@ public class RPG_Character extends RPG_Interactable{
    }
    public ArrayList<RPG_Item> getInventory(){ return inventory; }
    public ArrayList<RPG_Action> getActions(){ return actions; }
+   public RPG_Item[] getInventoryArray(){ // converts inventory list to an array and returns array
+      RPG_Item[] output = new RPG_Item[inventory.size()];
+      int i = 0;
+      for(RPG_Item a : inventory){
+         output[i] = a;
+         i++;
+      }
+      return output;
+   }
+   public RPG_Action[] getActionsArray(){ // converts action list to an array and returns array
+      RPG_Action[] output = new RPG_Action[actions.size()];
+      int i = 0;
+      for(RPG_Action a : actions){
+         output[i] = a;
+         i++;
+      }
+      return output;
+   }
    public boolean hasAction(String actionName){
       for(RPG_Action a : actions){
          if(a.getName().equals(actionName)){
@@ -431,7 +457,7 @@ public class RPG_Character extends RPG_Interactable{
       return null;
    }
    public void act(RPG_Action action, RPG_Character target){
-      
+      action.act(this, target);
    }
  
    public void takeDamage(int damage){
