@@ -172,6 +172,13 @@ public class RPG_Room {
    public void setDialogue(String dialogue) {
       this.dialogue = dialogue;
    }
+   public void addDialogueLine(String newLine){
+      if(dialogue.equals("")){
+         this.dialogue += newLine;
+      } else if(!(dialogue.equals(newLine))){ // prevent duplicate additions
+         this.dialogue += "\n" + newLine;
+      }
+   }
    
    public RPG_Room getRoom(String key){
    // recursive sequential search in down-right order

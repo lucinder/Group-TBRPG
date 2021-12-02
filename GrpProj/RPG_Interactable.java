@@ -26,4 +26,7 @@ public class RPG_Interactable{
    public void setDialogue(String newDialogue){
       this.dialogue = newDialogue;
    }
+   public void addDialogueLine(String newLine){
+      this.dialogue += "\n" + newLine;
+   }
 }

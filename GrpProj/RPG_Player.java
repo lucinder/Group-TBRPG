@@ -31,6 +31,7 @@ public class RPG_Player extends RPG_Character{
    }
    
    private static int level = 1;
+   private static int totalXP = 0;
    private RPG_Race pcRace = new RPG_Race();
    private RPG_Class pcClass = new RPG_Class();
    
@@ -73,7 +74,13 @@ public class RPG_Player extends RPG_Character{
       super.fullHeal();
       // handle inventory
       for(RPG_Item i : pcClass.getStartingEquipment()){
-         super.addItem(i);
+         if(i.equals(RPG_Items_List.PLACEHOLDER_SIMPLE)){ // placeholder randomization
+            super.addItem(RPG_Items_List.SIMPLE_WEAPONS.ALLSIMPLE[(int)(Math.random()*RPG_Items_List.SIMPLE_WEAPONS.ALLSIMPLE.length)]);
+         } else if (i.equals(RPG_Items_List.PLACEHOLDER_MARTIAL)) {
+            super.addItem(RPG_Items_List.MARTIAL_WEAPONS.ALLMARTIAL[(int)(Math.random()*RPG_Items_List.MARTIAL_WEAPONS.ALLMARTIAL.length)]);
+         } else {
+            super.addItem(i);
+         }
       }
       super.loadInventory();
       loadUnarmoredDefense();
@@ -217,6 +224,16 @@ public class RPG_Player extends RPG_Character{
       }
       if(next.equals("Q")) {
          System.exit(0);
+      }
+   }
+   
+   public void takeDamage(int damage){ // damage override to account for half-orcs being epic
+      if(getCurrentHP() - damage <= 0 && RPG_Optional_Race_Features.relentless && !RPG_Optional_Race_Features.relentlessUsed){
+         System.out.println(getName() + " did not succumb!");
+         RPG_Optional_Race_Features.relentlessUsed = true;
+         setCurrentHP(1);
+      } else {
+         setCurrentHP(getCurrentHP() - damage);
       }
    }
    

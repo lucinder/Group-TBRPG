@@ -6,7 +6,9 @@ Container file for dungeons (room sets).
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
+import java.util.HashMap;
 public class RPG_Dungeon{
+   private static final HashMap XPperCR = new HashMap(); // putting this here rather than in the enemy class so that we only store and fill 1 copy of it
    // private static RPG_Room[][] DUNGEON_ARRAY;
    private static RPG_Room DUNGEON_ROOM_HEAD;
    private static RPG_Room DUNGEON_ROOM_CURRENT;
@@ -17,14 +19,18 @@ public class RPG_Dungeon{
       player = p;
       DUNGEON_ROOM_HEAD = head;
       DUNGEON_ROOM_CURRENT = head;
+      fillXPMap();
       mainLoop();
    }
    
    public void mainLoop() throws IOException{
       Scanner input = new Scanner(System.in);
+      printRoomDesc();
       System.out.println("What will you do?");
       String[] action = input.nextLine().split(" "); // split the input into a series of words
-      if(contains(action, "move") || contains(action,"go") || contains(action,"proceed")){ // CONTAINS METHOD IS NOT CASE SENSITIVE
+      if(contains(action,"inventory")){
+         player.printInventory();
+      } if(contains(action, "move") || contains(action,"go") || contains(action,"proceed")){ // CONTAINS METHOD IS NOT CASE SENSITIVE
          if(contains(action, "n") || contains(action,"north") || contains(action,"up")){
             move("N");
          } else if (contains(action, "e") || contains(action,"east") || contains(action,"right")){
@@ -60,6 +66,59 @@ public class RPG_Dungeon{
             }
          }
       }
+   }
+   
+   public void printRoomDesc(){
+      boolean doorN = DUNGEON_ROOM_CURRENT.hasUp() && DUNGEON_ROOM_CURRENT.isExit("N");
+      boolean doorE = DUNGEON_ROOM_CURRENT.hasRight() && DUNGEON_ROOM_CURRENT.isExit("E");
+      boolean doorS = DUNGEON_ROOM_CURRENT.hasDown() && DUNGEON_ROOM_CURRENT.isExit("S");
+      boolean doorW = DUNGEON_ROOM_CURRENT.hasLeft() && DUNGEON_ROOM_CURRENT.isExit("W");
+      if(doorN){
+         if(doorE){
+            if(doorS){
+               if(doorW){ // NESW
+                  System.out.println("There is a door on each wall.");
+               } else { // NES
+                  System.out.println("There are doors to the north, east, and south.");
+               }
+            } else if(doorW){ // NEW
+               System.out.println("There are doors to the north, east, and west.");
+            } else { // NE
+               System.out.println("There are doors to the north and east.");
+            }
+         } else if(doorS){ 
+            if(doorW){ //NSW
+               System.out.println("There are doors to the north, south, and east.");
+            } else { // NS
+               System.out.println("There are doors to the north and south.");
+            }
+         } else if(doorW){ // NW
+            System.out.println("There are doors to the north and west.");
+         } else { // N
+            System.out.println("There is a door to the north.");
+         }
+      } else if (doorE){
+         if(doorS){
+            if(doorW){ // ESW
+               System.out.println("There are doors to the east, south, and west.");
+            } else{ // ES
+               System.out.println("There are doors to the east and south.");
+            }
+         } else if (doorW){ // EW
+            System.out.println("There are doors to the east and west.");
+         } else { // E
+            System.out.println("There is a door to the east.");
+         }
+      } else if (doorS){
+         if(doorW){ // SW
+            System.out.println("There are doors to the south and west.");
+         } else { // S
+            System.out.println("There is a door to the south.");
+         }
+      } else if (doorW){ // W
+         System.out.println("There is a door to the west.");
+      }
+      System.out.println(DUNGEON_ROOM_CURRENT.getDialogue());
    }
    
    // move to an adjacent, open square
@@ -166,5 +225,32 @@ public class RPG_Dungeon{
          System.out.println("YOU WON!");
          enemy.die(); // sets the enemy interaction to a corpse
       }
+   }
+   public static double getXP(int CR){ return (double)(XPperCR.get(CR)); }
+   private void fillXPMap(){ // fill xp table with up to CR 20
+      XPperCR.put(0,10);
+      XPperCR.put(0.125,25);
+      XPperCR.put(0.25,50);
+      XPperCR.put(0.5,100);
+      XPperCR.put(1,200);
+      XPperCR.put(2,450);
+      XPperCR.put(3,700);
+      XPperCR.put(4,1100);
+      XPperCR.put(5,1800);
+      XPperCR.put(6,2300);
+      XPperCR.put(7,2900);
+      XPperCR.put(8,3900);
+      XPperCR.put(9,5000);
+      XPperCR.put(10,5900);
+      XPperCR.put(11,7200);
+      XPperCR.put(12,8400);
+      XPperCR.put(13,10000);
+      XPperCR.put(14,11500);
+      XPperCR.put(15,13000);
+      XPperCR.put(16,15000);
+      XPperCR.put(17,18000);
+      XPperCR.put(18,20000);
+      XPperCR.put(19,22000);
+      XPperCR.put(20,25000);
    }
 }

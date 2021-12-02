@@ -72,6 +72,7 @@ public class RPG_Items_List{
             new int[]{1,6},
             true
          );
+      public static RPG_Weapon[] ALLSIMPLE = new RPG_Weapon[]{SHORTBOW, LIGHT_CROSSBOW, DAGGER, MACE, QUARTERSTAFF, JAVELIN};
    }
    public class MARTIAL_WEAPONS{
       public static RPG_Weapon SHORTSWORD = new RPG_Weapon(
@@ -109,6 +110,7 @@ public class RPG_Items_List{
             false,
             true
          );
+      public static RPG_Weapon[] ALLMARTIAL = new RPG_Weapon[]{SHORTSWORD, RAPIER, SCIMITAR, LONGSWORD, LONGBOW};
    }
    public class ARMORS{
       public static RPG_Armor LEATHER_ARMOR = new RPG_Armor(

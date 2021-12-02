@@ -503,6 +503,7 @@ public class RPG_Character extends RPG_Interactable{
       }
    }
    public void printInventory(){ // prints out all items in inventory
+      System.out.println("INVENTORY:");
       for(RPG_Item i : inventory){
          System.out.println(i.getName() + " x" + i.getQuantity());
       }
