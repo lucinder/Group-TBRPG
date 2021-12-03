@@ -13,6 +13,13 @@ public class RPG_Weapon extends RPG_Item{
    public RPG_Weapon(){
       super();
    }
+   public RPG_Weapon(RPG_Weapon other){
+      super(other.getName(), other.getQuantity(), other.getValue());
+      this.damageDice = other.getDamageDice();
+      this.magicBonus = other.getMagicBonus();
+      this.finesse = other.isFinesse();
+      this.ranged = other.isRanged();
+   }
    public RPG_Weapon(String name, int quantity, int value, int[] damageDice){
       super(name, quantity, value);
       this.damageDice = damageDice;

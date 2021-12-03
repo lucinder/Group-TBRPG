@@ -5,301 +5,9 @@ SUPERCLASS for Player Characters AND Enemies
 Handles stat arrays, HP, and actions
 **/
 import java.util.ArrayList;
-import java.util.Arrays;
 public class RPG_Character extends RPG_Interactable{
    public static final RPG_Action DONOTHING = new RPG_Action();
    public static final RPG_Attack UNARMED_STRIKE = new RPG_Attack();
-   
-   public static class RPG_Action{
-      private static String name; // Action name
-      private static String description;
-      public RPG_Action(){ this.name = "Nothing"; this.description = " did nothing."; }
-      public RPG_Action(String name){ this.name = name; this.description = " did nothing."; }
-      public RPG_Action(String name, String desc){ this.name = name; this.description = desc; }
-      public String getName(){ return name; }
-      public String getDesc(){ return description; }
-      public void setName(String newName){ this.name = newName; }
-      public void setDesc(String newDesc){ this.description = newDesc; }
-      public void act(RPG_Character user, RPG_Character target){ say(user.getName()); } // discard target for generic actions
-      public void say(String user){ System.out.println(user + description); }
-   }
-   public static class RPG_Attack extends RPG_Action{
-      private String type = "Damage";
-      // Action Types:
-      // Damage- standard (typeless) damage, used for all nonmagical weapons
-      // Healing- healing (negative damage)
-      // Fire Damage- fire elemental damage, used for fire spells / magical weapons
-      // Ice Damage- ice elemental damage, used for ice spells / magical weapons
-      // Lightning Damage- lightning elemental damage, used for lightning spells / magical weapons
-      // Poison Damage- poison elemental damage, used for poison spells / poisoned weapons
-      // Buff- raise a given stat by a certain value
-      // Debuff- lower a given stat by a certain value
-      private int[] dice = {1,1}; // Damage or Healing Dice stored in XdY format. Default = 1d1 = 1
-      private int modifier = 0; // Damage modifier
-      private int toHit = getProficiencyBonus(); // To-hit modifier (on top of the existing damage modifier)
-      public RPG_Attack(){super("Unarmed Strike"," swung its fist.");}
-      public RPG_Attack(String name, String type){
-         super(name, " used " + name);
-         this.type = type;
-      }
-      public RPG_Attack(int[] dice){ // Default attack with different damage
-         super("Unarmed Strike"," swung its fist.");
-         this.dice = dice;
-      }
-      public RPG_Attack(String name, String type, int[] dice, int modifier){
-         super(name, " used " + name);
-         this.type = type;
-         this.dice = dice;
-         this.modifier = modifier;
-      }
-      public RPG_Attack(String name, String type, int[] dice, int modifier, int proficiency){
-         super(name, " used " + name + ".");
-         this.type = type;
-         this.dice = dice;
-         this.modifier = modifier;
-         this.toHit = proficiency;
-      }
-      public RPG_Attack(RPG_Weapon weapon, int modifier, int proficiency){
-         super(weapon.getName() + " Attack"," swung their " + weapon.getName() + ".");
-         if(weapon.isRanged()){
-            setDesc(" shot with their " + weapon.getName() + ".");
-         }
-         this.type = weapon.getDamageType();
-         this.dice = weapon.getDamageDice();
-         this.modifier = modifier + weapon.getMagicBonus();
-         this.toHit = proficiency;
-      }
-      public String getType(){ return type; }
-      public int[] getDice(){ return dice; }
-      public int rollToHit(){
-         int roll = RPG_Dice.XdY(1,20) + modifier + toHit;
-         // System.out.print("Roll to hit: " + roll + " "); // testing purposes only
-         return roll;
-      }
-      public boolean isCrit(int roll){ return (roll - (modifier + toHit)) == 20; }
-      public int rollDamage(){
-         int damage = RPG_Dice.XdY(dice[0], dice[1]) + modifier;
-         if(modifier < 1){ damage = RPG_Dice.XdY(dice[0], dice[1]); } // discard negative modifiers
-         if(damage < 0){ damage = 0; } // discard negative damage
-         return damage;
-      }
-      /**
-      public int fullRoll(int AC){
-         int hitRoll = rollToHit();
-         if(hitRoll > AC){
-            int damage = rollDamage();
-            if(isCrit(hitRoll)){ 
-               System.out.print("Critical hit! ");
-               damage *= 2; 
-            } // double damage on a crit
-            System.out.println(damage + " " + type + "!"); // X _ damage!
-            return damage;
-         } else {
-            System.out.println("But it missed!");
-         }
-         return 0;
-      } **/
-      public boolean equals(Object otherItem){
-         if(otherItem instanceof RPG_Attack){
-            RPG_Attack other = (RPG_Attack)otherItem;
-            return super.name.equals(other.getName()) && type.equals(other.getType()) && Arrays.equals(dice, other.getDice());
-         }
-         return false;
-      }
-      public void act(RPG_Character user, RPG_Character target){
-         int hitRoll = rollToHit();
-         if(hitRoll > target.getAC()){
-            int damage = rollDamage();
-            if(target.getResistances().contains(this.type)){ // is the damage resisted?
-               damage /= 2;
-            } else if(target.getWeaknesses().contains(this.type)){ // is the target weak to the damage?
-               damage *= 2;
-            }
-            if(isCrit(hitRoll)){ // double damage on a crit
-               damage *= 2; 
-               say(user.getName(), target.getName(), damage, true, true);
-            } else { 
-               say(user.getName(), target.getName(), damage, true, false);
-            }
-            target.takeDamage(damage);
-         } else {
-            say(user.getName(), target.getName(), 0, false, false);
-         }
-      }
-      public void say(String user, String target, int dmgValue, boolean isHit, boolean isCrit){
-         if (type.equals("Healing")){
-            System.out.print(user + " heals the " + target + "! ");
-            System.out.println(target + " regained " + dmgValue + " HP!");
-         } else {
-            System.out.println(user + super.getDesc());
-            if(isHit){
-               if(isCrit){
-                  System.out.println("Critical hit!");
-               }
-               System.out.println(dmgValue + " damage!"); // X _ damage!
-            } else {
-               System.out.println("But it missed...");
-            }
-         }
-      }
-   }
-   
-   public class RPG_Buff extends RPG_Attack{
-      private int[] dice = {0,0}; // Buffs/nerfs use no dice by default
-      private int[] statModifiers = {0,0,0,0,0,0}; // no stat modifiers by default
-      private String[] typesGained = {}; // type resistances gained (Nerf subclass treats these as weaknesses)
-      public RPG_Buff(){ super("StandardBuff","Buff"); }
-      public RPG_Buff(String name, String type){ super(name, type); }
-      public RPG_Buff(String name, int[] statModifiers){
-         super(name, "Buff");
-         this.statModifiers = statModifiers;
-      }
-      public RPG_Buff(String name, String type, int[] statModifiers){
-         super(name, type);
-         this.statModifiers = statModifiers;
-      }
-      public RPG_Buff(String name, String[] resistancesGained){
-         super(name, "Buff");
-         this.typesGained = resistancesGained;
-      }
-      public RPG_Buff(String name, String type, String[] resistancesGained){
-         super(name, type);
-         this.typesGained = resistancesGained;
-      }
-      public RPG_Buff(String name, int[] statModifiers, String[] resistancesGained){
-         super(name, "Buff");
-         this.statModifiers = statModifiers;
-         this.typesGained = resistancesGained;
-      }
-      public RPG_Buff(String name, String type, int[] statModifiers, String[] resistancesGained){
-         super(name, type);
-         this.statModifiers = statModifiers;
-         this.typesGained = resistancesGained;
-      }
-      public int[] getStatModifiers(){ return statModifiers; }
-      public String[] getTypes(){ return typesGained; }
-      public boolean equals(Object otherItem){
-         if(otherItem instanceof RPG_Buff){
-            RPG_Buff other = (RPG_Buff)otherItem;
-            return name.equals(other.getName()) && super.getType().equals(other.getType()) && Arrays.equals(statModifiers, other.getStatModifiers()) && Arrays.equals(typesGained, other.getTypes());
-         }
-         return false;
-      }
-      public void act(RPG_Character target){
-         if(getStatModifiers()[0] != 0){ // add stat modifiers
-            target.addToStr(getStatModifiers()[0]);
-         } else if (getStatModifiers()[1] != 0){
-            target.addToDex(getStatModifiers()[1]);
-         } else if(getStatModifiers()[2] != 0){
-            target.addToCon(getStatModifiers()[2]);
-         } else if(getStatModifiers()[3] != 0){
-            target.addToInt(getStatModifiers()[3]);
-         } else if(getStatModifiers()[4] != 0){
-            target.addToWis(getStatModifiers()[4]);
-         } else if(getStatModifiers()[5] != 0){
-            target.addToCha(getStatModifiers()[5]);
-         } else {
-            target.addMaxHP(getStatModifiers()[6]);
-         }
-         if(getTypes().length > 0){ // add type weaknesses
-            for(String s : getTypes()){
-               target.addResistance(s);
-            }
-         }
-      }
-      public int[] say(String user, String target){
-         System.out.print(user + " used " + super.getName() + " on the " + target + "! ");
-         if(statModifiers[0] != 0){
-            System.out.print(target + "\'s STR increased by " + statModifiers[0] + "! ");
-         } else if (statModifiers[1] != 0){
-            System.out.print(target + "\'s DEX increased by " + statModifiers[1] + "! ");
-         } else if(statModifiers[2] != 0){
-            System.out.print(target + "\'s CON increased by " + statModifiers[2] + "! ");
-         } else if(statModifiers[3] != 0){
-            System.out.print(target + "\'s INT increased by " + statModifiers[3] + "! ");
-         } else if(statModifiers[4] != 0){
-            System.out.print(target + "\'s WIS increased by " + statModifiers[4] + "! ");
-         } else if(statModifiers[5] != 0){
-            System.out.print(target + "\'s CHA increased by " + statModifiers[5] + "! ");
-         } else {
-            System.out.print(target + "\'s maximum HP increased by " + statModifiers[6] + "! ");
-         }
-         if(typesGained.length > 0){
-            System.out.print(target + " gained resistance to ");
-            String toPrint = "";
-            for(String s : typesGained){
-               toPrint += s + ", ";
-            }
-            toPrint = toPrint.substring(0, toPrint.length()-2);
-            System.out.println(toPrint + ".");
-         }
-         return statModifiers;
-      }
-   }
-   
-   public class RPG_Debuff extends RPG_Buff{ // debuff- soft-overrides constructors (passes different action type + replaces a parameter name), say() function (replacing gains with losses)
-      public RPG_Debuff(){ super("StandardDebuff","Debuff"); }
-      public RPG_Debuff(String name, int[] statModifiers){
-         super(name, "Debuff", statModifiers);
-      }
-      public RPG_Debuff(String name, String[] weaknessesGained){
-         super(name, "Debuff", weaknessesGained);
-      }
-      public RPG_Debuff(String name, int[] statModifiers, String[] weaknessesGained){
-         super(name, "Debuff", statModifiers, weaknessesGained);
-      }
-      public void act(RPG_Character target){
-         if(super.getStatModifiers()[0] != 0){ // add stat modifiers
-            target.addToStr(super.getStatModifiers()[0]);
-         } else if (super.getStatModifiers()[1] != 0){
-            target.addToDex(super.getStatModifiers()[1]);
-         } else if(super.getStatModifiers()[2] != 0){
-            target.addToCon(super.getStatModifiers()[2]);
-         } else if(super.getStatModifiers()[3] != 0){
-            target.addToInt(super.getStatModifiers()[3]);
-         } else if(super.getStatModifiers()[4] != 0){
-            target.addToWis(super.getStatModifiers()[4]);
-         } else if(super.getStatModifiers()[5] != 0){
-            target.addToCha(super.getStatModifiers()[5]);
-         } else {
-            target.addMaxHP(super.getStatModifiers()[6]);
-         }
-         if(super.getTypes().length > 0){ // add type weaknesses
-            for(String s : super.getTypes()){
-               target.addWeakness(s);
-            }
-         }
-      }
-      public int[] say(String user, String target){
-         System.out.print(user + " used " + getName() + " on the " + target + "! ");
-         if(super.getStatModifiers()[0] != 0){
-            System.out.print(target + "\'s STR decreased by " + Math.abs(super.getStatModifiers()[0]) + "! ");
-         } else if (super.getStatModifiers()[1] != 0){
-            System.out.print(target + "\'s DEX decreased by " + Math.abs(super.getStatModifiers()[1]) + "! ");
-         } else if(super.getStatModifiers()[2] != 0){
-            System.out.print(target + "\'s CON decreased by " + Math.abs(super.getStatModifiers()[2]) + "! ");
-         } else if(super.getStatModifiers()[3] != 0){
-            System.out.print(target + "\'s INT decreased by " + Math.abs(super.getStatModifiers()[3]) + "! ");
-         } else if(super.getStatModifiers()[4] != 0){
-            System.out.print(target + "\'s WIS decreased by " + Math.abs(super.getStatModifiers()[4]) + "! ");
-         } else if(super.getStatModifiers()[5] != 0){
-            System.out.print(target + "\'s CHA decreased by " + Math.abs(super.getStatModifiers()[5]) + "! ");
-         } else {
-            System.out.print(target + "\'s maximum HP decreased by " + Math.abs(super.getStatModifiers()[6]) + "! ");
-         }
-         if(super.getTypes().length > 0){
-            System.out.print(target + " became weak to ");
-            String toPrint = "";
-            for(String s : super.getTypes()){
-               toPrint += s + ", ";
-            }
-            toPrint = toPrint.substring(0, toPrint.length()-2);
-            System.out.println(toPrint + ".");
-         }
-         return super.getStatModifiers();
-      }
-
-   }
    
    private String name;
    int[] stats = RPG_Dice.randchar(); // {STR, DEX, CON, INT, WIS, CHA}
@@ -345,7 +53,7 @@ public class RPG_Character extends RPG_Interactable{
       loadInventory();
    }
    
-   public RPG_Character(String name, int hpMax, int[] stats, int AC,  RPG_Action[] actions){
+   public RPG_Character(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions){
       this.name = name;
       this.hpMax = hpMax;
       this.hpCur = hpMax;
@@ -487,21 +195,40 @@ public class RPG_Character extends RPG_Interactable{
             RPG_Weapon weapon = (RPG_Weapon)i;
             int mod = 0;
             if(weapon.isRanged() || (weapon.isFinesse() && stats[1] > stats[0])){
-               mod += RPG_Dice.getModifier(stats[1]); // use dex mod
+               mod += dexModifier(); // use dex mod
             } else {
-               mod += RPG_Dice.getModifier(stats[0]); // use str mod
+               mod += strModifier(); // use str mod
             }
             RPG_Attack weaponattack = new RPG_Attack(weapon, mod, getProficiencyBonus());
             if(hasAction(weaponattack.getName())){
                replaceAction(weaponattack.getName(),weaponattack);
-            } else if(actions.contains(UNARMED_STRIKE)){
-               replaceAction("Attack", weaponattack);
             } else {
                addAction(weaponattack);
             }
          }
       }
    }
+   
+   // getters for stat modifiers
+   public int strModifier(){
+      return RPG_Dice.getModifier(stats[0]);
+   }
+   public int dexModifier(){
+      return RPG_Dice.getModifier(stats[1]);
+   }
+   public int conModifier(){
+      return RPG_Dice.getModifier(stats[2]);
+   }
+   public int intModifier(){
+      return RPG_Dice.getModifier(stats[3]);
+   }
+   public int wisModifier(){
+      return RPG_Dice.getModifier(stats[4]);
+   }
+   public int chaModifier(){
+      return RPG_Dice.getModifier(stats[5]);
+   }
+   
    public void printInventory(){ // prints out all items in inventory
       System.out.println("INVENTORY:");
       for(RPG_Item i : inventory){

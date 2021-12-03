@@ -20,6 +20,8 @@ public class RPG_Dungeon{
       DUNGEON_ROOM_HEAD = head;
       DUNGEON_ROOM_CURRENT = head;
       fillXPMap();
+      // System.out.println("TEST- xp for CR 4 creature = " + XPperCR.get(4));
+      // System.out.println("Test- xp for a CR 1/8 creature = " + XPperCR.get(0.125));
       mainLoop();
    }
    
@@ -27,10 +29,12 @@ public class RPG_Dungeon{
       Scanner input = new Scanner(System.in);
       printRoomDesc();
       System.out.println("What will you do?");
-      String[] action = input.nextLine().split(" "); // split the input into a series of words
+      String[] action = input.nextLine().toLowerCase().split(" "); // split the input into a series of words
       if(contains(action,"inventory")){
          player.printInventory();
-      } if(contains(action, "move") || contains(action,"go") || contains(action,"proceed")){ // CONTAINS METHOD IS NOT CASE SENSITIVE
+      } else if(contains(action, "xp")){
+         System.out.println("You currently have a total of " + player.getTotalXP() + " XP!");
+      } else if(contains(action, "move") || contains(action,"go") || contains(action,"proceed")){ // CONTAINS METHOD IS NOT CASE SENSITIVE
          if(contains(action, "n") || contains(action,"north") || contains(action,"up")){
             move("N");
          } else if (contains(action, "e") || contains(action,"east") || contains(action,"right")){
@@ -186,7 +190,7 @@ public class RPG_Dungeon{
       int turnNo = 0;
       while(player.getHP() > 0 && enemy.getHP() > 0 && !enemy.isPacified()){
          if((turnNo%2 == 0 && playerFirst) || (turnNo%2 != 0 && !playerFirst)){ // player's turn
-            ArrayList<RPG_Character.RPG_Action> actions = player.getActions();
+            ArrayList<RPG_Action> actions = player.getActions();
             Scanner input = new Scanner(System.in);
             int selection = -1;
             boolean actionSelected = false;
@@ -194,7 +198,7 @@ public class RPG_Dungeon{
                System.out.println("["+enemy.getName()+": HP " + enemy.getHP() + "/" + enemy.getMaxHP() + "] vs [" + player.getName()+ ": HP " + player.getHP() + "/" + player.getMaxHP() + "]");
                System.out.println("What will " + player.getName() + " do?"); // prompt user for action
                int i = 0;
-               for(RPG_Character.RPG_Action a : actions){
+               for(RPG_Action a : actions){
                   System.out.println(" [" + i+"] " + a.getName());
                   i++;
                }
@@ -210,7 +214,7 @@ public class RPG_Dungeon{
                   continue; // keep looping until a valid selection is made 
                }
             }
-            RPG_Character.RPG_Action a = actions.get(selection);
+            RPG_Action a = actions.get(selection);
             a.act(player, enemy);
          } else { // enemy's turn
             enemy.doAction(player);
@@ -224,6 +228,10 @@ public class RPG_Dungeon{
       } else {
          System.out.println("YOU WON!");
          enemy.die(); // sets the enemy interaction to a corpse
+         // System.out.println("TEST- enemy CR = " + enemy.getCR());
+         int toGain = (int)(XPperCR.getOrDefault(enemy.getCR(), 10));
+         System.out.println(player.getName() + " gained " + toGain + " XP.");
+         player.gainXP(toGain);
       }
    }
    public static double getXP(int CR){ return (double)(XPperCR.get(CR)); }
@@ -232,25 +240,25 @@ public class RPG_Dungeon{
       XPperCR.put(0.125,25);
       XPperCR.put(0.25,50);
       XPperCR.put(0.5,100);
-      XPperCR.put(1,200);
-      XPperCR.put(2,450);
-      XPperCR.put(3,700);
-      XPperCR.put(4,1100);
-      XPperCR.put(5,1800);
-      XPperCR.put(6,2300);
-      XPperCR.put(7,2900);
-      XPperCR.put(8,3900);
-      XPperCR.put(9,5000);
-      XPperCR.put(10,5900);
-      XPperCR.put(11,7200);
-      XPperCR.put(12,8400);
-      XPperCR.put(13,10000);
-      XPperCR.put(14,11500);
-      XPperCR.put(15,13000);
-      XPperCR.put(16,15000);
-      XPperCR.put(17,18000);
-      XPperCR.put(18,20000);
-      XPperCR.put(19,22000);
-      XPperCR.put(20,25000);
+      XPperCR.put(1.0,200);
+      XPperCR.put(2.0,450);
+      XPperCR.put(3.0,700);
+      XPperCR.put(4.0,1100);
+      XPperCR.put(5.0,1800);
+      XPperCR.put(6.0,2300);
+      XPperCR.put(7.0,2900);
+      XPperCR.put(8.0,3900);
+      XPperCR.put(9.0,5000);
+      XPperCR.put(10.0,5900);
+      XPperCR.put(11.0,7200);
+      XPperCR.put(12.0,8400);
+      XPperCR.put(13.0,10000);
+      XPperCR.put(14.0,11500);
+      XPperCR.put(15.0,13000);
+      XPperCR.put(16.0,15000);
+      XPperCR.put(17.0,18000);
+      XPperCR.put(18.0,20000);
+      XPperCR.put(19.0,22000);
+      XPperCR.put(20.0,25000);
    }
 }

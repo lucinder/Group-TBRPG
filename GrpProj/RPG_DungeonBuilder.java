@@ -17,14 +17,14 @@ public class RPG_DungeonBuilder{
                cur.setRight(new RPG_Room(idNo+"_Boss")); // add boss room
                cur = cur.getRight();
                cur.unlockExit("W"); // unlock boss room
-               System.out.println(cur.getID());
+               // System.out.println(cur.getID());
             } else { 
                cur.unlockExit("E");
                // randomize next room's contents
                cur.setRight(new RPG_Room(idNo+"_"+getRandomRoomType()));
                cur = cur.getRight();
                cur.unlockExit("W");
-               System.out.println(cur.getID());
+               // System.out.println(cur.getID());
                // randomly add north and south branches
                boolean north = branch();
                boolean south = branch();
@@ -38,7 +38,7 @@ public class RPG_DungeonBuilder{
                      cur.getUp().unlockExit("W");
                      cur.getUp().setLeft(cur.getLeft().getUp());
                   }
-                  System.out.println(northbranch.getID());
+                  // System.out.println(northbranch.getID());
                }
                if(south){
                   cur.unlockExit("S");
@@ -50,7 +50,7 @@ public class RPG_DungeonBuilder{
                      cur.getDown().unlockExit("W");
                      cur.getDown().setLeft(cur.getLeft().getDown());
                   }
-                  System.out.println(southbranch.getID());
+                  // System.out.println(southbranch.getID());
                }
             }
          }

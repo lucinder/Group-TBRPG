@@ -20,7 +20,7 @@ public class RPG_Player extends RPG_Character{
       private static String breathWeaponType = "None"; // breath weapon type for dragonborn - default none (no breath weapon)
       private static int[] breathWeaponDice = {2,6}; // breath weapon damage dice - 2d6 default. should increase at certain levels
       private static boolean breathWeaponSaveDex = true; // is the breath weapon save dex (true) or con (false)? default true
-      private static int breathWeaponDC; // save DC for breath weapons
+      private static boolean breathWeaponUsed = false; // has the breath weapon been used this battle?
       private static boolean lucky = false; // character has the lucky feature?
       private static boolean luckyUsed = false; // has the lucky feature been used this rest - default false
       private static boolean cunning = false; // character has the gnome cunning feature?
@@ -83,10 +83,16 @@ public class RPG_Player extends RPG_Character{
          }
       }
       super.loadInventory();
-      loadUnarmoredDefense();
+      registerOptionalRaceFeatures(); // handle optional race features
+      loadArmorClass();
+   }
+   public int getTotalXP(){ return totalXP; }
+   public void gainXP(int toAdd){
+      this.totalXP += toAdd;
+      // add leveling here
    }
    
-   private void loadUnarmoredDefense(){  // load unarmored defense for monk/barbarian classes
+   private void loadArmorClass(){  // load unarmored defense for monk/barbarian classes or armor for classes that start with it
       int unarmoredDefense = 10 + RPG_Dice.getModifier(super.getStats()[1]);
       if(pcClass.getName().equals("Monk")){
          unarmoredDefense = 10 + RPG_Dice.getModifier(super.getStats()[1]) + RPG_Dice.getModifier(super.getStats()[4]);
@@ -95,6 +101,14 @@ public class RPG_Player extends RPG_Character{
       }  
       if(unarmoredDefense > super.getAC()){
          super.setAC(unarmoredDefense);
+      }
+      for(RPG_Item i : getInventory()){ // load armor for items
+         if(i instanceof RPG_Armor){
+            int newAC = ((RPG_Armor)i).getAC(super.dexModifier());
+            if(newAC > super.getAC()){
+               super.setAC(newAC);
+            }
+         }
       }
    }
    
@@ -157,6 +171,9 @@ public class RPG_Player extends RPG_Character{
                metalChromChosen = true;
                System.out.println("Choose your scale color!\n[1] Red\n[2] Green\n[3] Blue\n[4] Black\n[5] White");
             } else {
+               if(next.equals("Q")) {
+                  System.exit(0);
+               }
                System.out.println("Input not recognized!");
                System.out.println("Are you a metallic or chromatic dragonborn?");
             }
@@ -186,6 +203,9 @@ public class RPG_Player extends RPG_Character{
                   RPG_Optional_Race_Features.breathWeaponSaveDex = false;
                }
                else {
+                  if(next.equals("Q")) {
+                     System.exit(0);
+                  }
                   typeChosen = false;
                   System.out.println("Color not recognized!");
                   System.out.println("Choose your scale color!\n[1] Red\n[2] Green\n[3] Blue\n[4] Black\n[5] White");
@@ -214,6 +234,9 @@ public class RPG_Player extends RPG_Character{
                   addResistance("Acid");
                }
                else {
+                  if(next.equals("Q")) {
+                     System.exit(0);
+                  }
                   typeChosen = false;
                   System.out.println("Metal not recognized!");
                   System.out.println("Choose your scale metal!\n[1] Gold\n[2] Silver\n[3] Bronze\n[4] Brass\n[5] Copper");
@@ -222,9 +245,12 @@ public class RPG_Player extends RPG_Character{
          }
          next = input.nextLine();
       }
-      if(next.equals("Q")) {
-         System.exit(0);
+      if(RPG_Optional_Race_Features.breathWeaponSaveDex){
+         addAction(new RPG_SaveAttack("Breath Weapon",RPG_Optional_Race_Features.breathWeaponType,RPG_Optional_Race_Features.breathWeaponDice,(8+getProficiencyBonus()+conModifier()),1));
+      } else {
+         addAction(new RPG_SaveAttack("Breath Weapon",RPG_Optional_Race_Features.breathWeaponType,RPG_Optional_Race_Features.breathWeaponDice,(8+getProficiencyBonus()+conModifier()),2));
       }
+      return;
    }
    
    public void takeDamage(int damage){ // damage override to account for half-orcs being epic

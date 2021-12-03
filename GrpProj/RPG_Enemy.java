@@ -8,12 +8,17 @@ To be added: action randomization (selection) and execution in-battle
 import java.util.ArrayList;
 public class RPG_Enemy extends RPG_Character{
    private static double CR = 0.25; // enemy CR: default 1/4
+   private static boolean isBoss = false;
    private boolean pacified = false;
    public RPG_Enemy(){super();}
    public RPG_Enemy(RPG_Enemy toCopy){ // copy constructor
       super(toCopy.getName(), toCopy.getMaxHP(), toCopy.getStats(), toCopy.getAC(), toCopy.getActionsArray(), toCopy.getInventoryArray());
       this.CR = toCopy.getCR();
+      this.isBoss = toCopy.getIfBoss();
       setDialogue("A wild " + toCopy.getName() + " appeared!");
+      if(this.isBoss){
+         setDialogue("The mighty " + toCopy.getName() + " blocks the path!");
+      }
    }
    public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, double CR){
       super(name, hpMax, stats, AC, actions);
@@ -30,6 +35,17 @@ public class RPG_Enemy extends RPG_Character{
       this.CR = CR;
       setDialogue("A wild " + name + " appeared!");
    }
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, double CR, boolean isBoss){
+      super(name, hpMax, stats, AC, actions, inventory);
+      this.CR = CR;
+      this.isBoss = isBoss;
+      setDialogue("A wild " + name + " appeared!");
+      // System.out.println("TEST- is boss? " + this.isBoss);
+      if(this.isBoss){
+         setDialogue("The mighty " + name + " blocks the path!");
+      }
+   }
+   public static boolean getIfBoss(){ return isBoss; }
    public static double getCR(){ return CR; }
    public static int getProficiencyBonus(){
       return 2 + (int)(sgn(CR - 1) * (Math.abs(CR - 1)/4));

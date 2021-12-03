@@ -4,8 +4,8 @@ public class RPG_Enemies_List{
       30,
       new int[]{10,10,10,10,10,10},
       10,
-      new RPG_Character.RPG_Action[]{
-         RPG_Character.DONOTHING
+      new RPG_Action[]{
+         new RPG_Action(RPG_Character.DONOTHING)
       },
       new RPG_Item[]{},
       0
@@ -15,9 +15,9 @@ public class RPG_Enemies_List{
       30,
       new int[]{16,11,14,8,10,12},
       10,
-      new RPG_Character.RPG_Action[]{
-         RPG_Character.DONOTHING,
-         RPG_Character.UNARMED_STRIKE
+      new RPG_Action[]{
+         new RPG_Action(RPG_Character.DONOTHING),
+         new RPG_Attack(RPG_Character.UNARMED_STRIKE)
       },
       new RPG_Item[]{},
       0.125
@@ -27,14 +27,15 @@ public class RPG_Enemies_List{
       60,
       new int[]{18,13,16,10,12,14},
       14,
-      new RPG_Character.RPG_Action[]{
-         RPG_Character.UNARMED_STRIKE
+      new RPG_Action[]{
+         new RPG_Attack(RPG_Character.UNARMED_STRIKE)
       },
       new RPG_Item[]{
-         RPG_Items_List.MARTIAL_WEAPONS.LONGSWORD,
-         RPG_Items_List.MARTIAL_WEAPONS.LONGBOW
+         new RPG_Weapon(RPG_Items_List.MARTIAL_WEAPONS.LONGSWORD),
+         new RPG_Weapon(RPG_Items_List.MARTIAL_WEAPONS.LONGBOW)
       },
-      4
+      4,
+      true
    );
 
    public static RPG_Enemy[] test = new RPG_Enemy[]{DUMMY, ANGRYDUMMY};
