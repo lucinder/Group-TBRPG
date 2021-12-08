@@ -53,6 +53,19 @@ public class RPG_Room {
       }
    }
    
+   public RPG_Room(String id, String difficultyOverride){
+      roomID = id;
+      String[] idParser = id.split("_");
+      roomNumber = idParser[0];
+      roomType = idParser[1];
+      if(roomType.equals("En") || roomType.equals("EnTrap") || roomType.equals("EnTres") || roomType.equals("EnTrapTres")){
+         addRandomEnemy(difficultyOverride);
+      }
+      if(roomType.equals("Boss")){
+         addRandomBoss(difficultyOverride);
+      }
+   }
+   
    // Getters & Setters
    public String getID() {
       return roomID;
@@ -169,13 +182,38 @@ public class RPG_Room {
       **/
       // TBA: Selection based on cr
       int enemyID = (int)(Math.random()*RPG_Enemies_List.test.length);
-      System.out.println("DEBUG - Enemy ID = " + enemyID);
+      // System.out.println("DEBUG - Enemy ID = " + enemyID);
       RPG_Enemy enemy = new RPG_Enemy(RPG_Enemies_List.test[enemyID]); // send an existing enemy to a copy constructor so each can be treated differently
       objects.add(enemy); // add enemy to objects array
    }
    
+   public void addRandomEnemy(String difficultyOverride){
+      RPG_Enemy enemy;
+      if(difficultyOverride.equals("Easy")){ // easy mode- all enemies are normal dummies
+         enemy = new RPG_Enemy(RPG_Enemies_List.DUMMY);
+      } else if (difficultyOverride.equals("Hard")){ // hard mode- all enemies are mad dummies
+         enemy = new RPG_Enemy(RPG_Enemies_List.ANGRYDUMMY);
+      } else {
+         int enemyID = (int)(Math.random()*RPG_Enemies_List.test.length);
+         enemy = new RPG_Enemy(RPG_Enemies_List.test[enemyID]);
+      }
+      objects.add(enemy);
+   }
+   
    public void addRandomBoss(){
       objects.add(new RPG_Enemy(RPG_Enemies_List.BOSSDUMMY));
+   }
+   
+   public void addRandomBoss(String difficultyOverride){
+      RPG_Enemy boss;
+      if(difficultyOverride.equals("Easy")){ // easy mode- all enemies are normal dummies
+         boss = new RPG_Enemy(RPG_Enemies_List.BOSSDUMMYEASY);
+      } else if (difficultyOverride.equals("Hard")){ // hard mode- all enemies are mad dummies
+         boss = new RPG_Enemy(RPG_Enemies_List.BOSSDUMMYHARD);
+      } else {
+         boss = new RPG_Enemy(RPG_Enemies_List.BOSSDUMMY);
+      }
+      objects.add(boss);
    }
    
    public String getDialogue() {

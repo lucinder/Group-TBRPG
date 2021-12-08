@@ -3,14 +3,14 @@
 @file RPG_Trap.java
 **/
 public class RPG_Trap extends RPG_Interactable{
-   private RPG_SaveAttack attack;
+   private RPG_Attack attack;
    private boolean isDisabled = false;
    public RPG_Trap() { // no arg constructor- defaults to pit trap
       super("Pit Trap", " triggered!");
       this.attack = new RPG_SaveAttack("Pit Trap", "Damage", new int[]{1,6}, 10, 1); // Pit trap- DC 10 dex save, 1d6 damage
    }
 
-    public RPG_Trap(String name, RPG_SaveAttack attack){ // full arg constructor
+    public RPG_Trap(String name, RPG_Attack attack){ // full arg constructor
         super(name, " triggered!");
         this.attack = attack;
     }
@@ -25,13 +25,13 @@ public class RPG_Trap extends RPG_Interactable{
         return this.isDisabled;
     }
 
-    public RPG_SaveAttack getAttack() {
+    public RPG_Attack getAttack() {
         return this.attack;
     }
     
     public void trigger(RPG_Character target){
       if(!isDisabled){ // if the trap is disabled, don't trigger it
-         attack.act(this.getName(), target);
+         attack.act(this.getName(), target, true);
       }
     }
     

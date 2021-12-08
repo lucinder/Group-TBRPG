@@ -59,6 +59,60 @@ public class RPG_DungeonBuilder{
          }
       }
    }
+   
+   // DEBUG MODE CONSTRUCTOR
+   public RPG_DungeonBuilder(int levels, int levelLength, String difficultyOverride){
+      head = new RPG_Room("0_Empty");
+      RPG_Room cur = head;
+      for(int i = 1; i <= levels; i++){ // populate all dungeon levels
+         for(int j = 1; j <= levelLength; j++){ // populate all dungeon rooms
+            int idNo = (i-1)*levelLength + j;
+            if(j == levelLength){
+               cur.unlockExit("E");
+               cur.setRight(new RPG_Room(idNo+"_Boss", difficultyOverride)); // add boss room
+               cur = cur.getRight();
+               if(i == levels-1){ // are we in the VERY last room?
+                  cur.setFinalRoom();
+               }
+               cur.unlockExit("W");
+               System.out.println("DEBUG - Room ID = " + cur.getID());
+            } else { 
+               cur.unlockExit("E");
+               cur.setRight(new RPG_Room(idNo+"_"+getRandomRoomType(),difficultyOverride));
+               cur = cur.getRight();
+               cur.unlockExit("W");
+               System.out.println("DEBUG - Room ID = " + cur.getID());
+               boolean north = branch();
+               boolean south = branch();
+               if(north){
+                  cur.unlockExit("N");
+                  RPG_Room northbranch = new RPG_Room(idNo+"n_"+getRandomRoomType(),difficultyOverride);
+                  northbranch.unlockExit("S");
+                  if(cur.getLeft() != null && cur.getLeft().getUp() != null){
+                     cur.getLeft().getUp().unlockExit("E");
+                     cur.getLeft().getUp().setRight(cur.getUp());
+                     cur.getUp().unlockExit("W");
+                     cur.getUp().setLeft(cur.getLeft().getUp());
+                  }
+                 System.out.println("DEBUG - Room ID = " + northbranch.getID());
+               }
+               if(south){
+                  cur.unlockExit("S");
+                  RPG_Room southbranch = new RPG_Room(idNo+"s_"+getRandomRoomType(),difficultyOverride);
+                  southbranch.unlockExit("N");
+                  if(cur.getLeft() != null && cur.getLeft().getDown() != null){ 
+                     cur.getLeft().getDown().unlockExit("E");
+                     cur.getLeft().getDown().setRight(cur.getDown());
+                     cur.getDown().unlockExit("W");
+                     cur.getDown().setLeft(cur.getLeft().getDown());
+                  }
+                  System.out.println("DEBUG - Room ID = " + southbranch.getID());
+               }
+            }
+         }
+      }
+   }
+   
    public RPG_Room getHead(){ return head; }
    
    private boolean branch(){ return (int)(Math.random()*2) == 0; }
