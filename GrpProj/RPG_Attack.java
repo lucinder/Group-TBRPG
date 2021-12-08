@@ -48,7 +48,7 @@ public class RPG_Attack extends RPG_Action{
    }
    public RPG_Attack(RPG_Weapon weapon, int modifier, int proficiency){
       super(weapon.getName() + " Attack"," swung their " + weapon.getName() + ".");
-      System.out.println("TEST- weapon name = " + weapon.getName());
+      // System.out.println("TEST- weapon name = " + weapon.getName());
       if(weapon.isRanged()){
          setDesc(" shot with their " + weapon.getName() + ".");
       }

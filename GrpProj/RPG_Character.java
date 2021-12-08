@@ -267,6 +267,11 @@ public class RPG_Character extends RPG_Interactable{
    }
    
    // rolls
+   public int initiative(){ // identical to dexSave here, but distinguishing it is necessary because some subclasses override dexSave
+      int saveRoll = RPG_Dice.XdY(1,20);
+      int saveMod = RPG_Dice.getModifier(stats[1]);
+      return saveRoll + saveMod;
+   }
    public int strSave(){
       int saveRoll = RPG_Dice.XdY(1,20);
       int saveMod = RPG_Dice.getModifier(stats[0]);

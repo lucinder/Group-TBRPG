@@ -16,7 +16,7 @@ public class RPG_Trap extends RPG_Interactable{
     }
     
     public RPG_Trap(RPG_Trap other){ // copy constructor
-      super(other.getName(), "triggered!");
+      super(other.getName(), " triggered!");
       this.attack = other.getAttack();
       this.isDisabled = other.getIfDisabled();
     }
@@ -36,10 +36,12 @@ public class RPG_Trap extends RPG_Interactable{
     }
     
     public void disable(){
+      System.out.println("You disabled a " + this.getName() + "!");
       isDisabled = true;
     }
     
     public void interactionEvent(){
-      System.out.println("A " + this.getName() + this.getDialogue());
-   }
+      // System.out.println("A " + this.getName() + this.getDialogue());
+      // NO NEED FOR THE ABOVE- it's already done when the trap is triggered
+    }
 }

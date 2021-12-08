@@ -31,6 +31,7 @@ public class RPG_Player extends RPG_Character{
    }
    
    private boolean pacifist = true; // has the character spared all enemies so far?
+   private boolean hidden = false; // for rogues- is the character currently hidden?
    private static int level = 1;
    private static int totalXP = 0;
    private RPG_Race pcRace = new RPG_Race();
@@ -253,11 +254,28 @@ public class RPG_Player extends RPG_Character{
          next = input.nextLine();
       }
       if(RPG_Optional_Race_Features.breathWeaponSaveDex){
-         addAction(new RPG_SaveAttack("Breath Weapon",RPG_Optional_Race_Features.breathWeaponType,RPG_Optional_Race_Features.breathWeaponDice,(8+getProficiencyBonus()+conModifier()),1));
+         addAction(new RPG_SaveAttack("Dragon Breath",RPG_Optional_Race_Features.breathWeaponType,RPG_Optional_Race_Features.breathWeaponDice,(8+getProficiencyBonus()+conModifier()),1));
       } else {
-         addAction(new RPG_SaveAttack("Breath Weapon",RPG_Optional_Race_Features.breathWeaponType,RPG_Optional_Race_Features.breathWeaponDice,(8+getProficiencyBonus()+conModifier()),2));
+         addAction(new RPG_SaveAttack("Dragon Breath",RPG_Optional_Race_Features.breathWeaponType,RPG_Optional_Race_Features.breathWeaponDice,(8+getProficiencyBonus()+conModifier()),2));
       }
       return;
+   }
+   public boolean isBreathUsed(){
+      return RPG_Optional_Race_Features.breathWeaponUsed;
+   }
+   public void useBreath(){
+      RPG_Optional_Race_Features.breathWeaponUsed = true;
+   }
+   
+   // Hide action related things
+   public boolean isHidden(){
+      return hidden;
+   }
+   public void hide(){
+      hidden = true;
+   }
+   public void unhide(){
+      hidden = false;
    }
    
    public void takeDamage(int damage){ // damage override to account for half-orcs being epic
@@ -267,6 +285,11 @@ public class RPG_Player extends RPG_Character{
          setCurrentHP(1);
       } else {
          setCurrentHP(getCurrentHP() - damage);
+      }
+      if(getHP() <= 0){ // player loss quits game
+         System.out.println("You died!");
+         System.out.println("GAME OVER");
+         System.exit(0);
       }
    }
    
@@ -311,6 +334,9 @@ public class RPG_Player extends RPG_Character{
       if(pcClass.getPrimaryStat() == 0 || pcClass.getSecondaryStat() == 0){
          saveMod += getProficiencyBonus();
       }
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave(true) + saveMod;
+      }
       return saveRoll + saveMod;
    }
    public int dexSave(){
@@ -318,6 +344,9 @@ public class RPG_Player extends RPG_Character{
       int saveMod = RPG_Dice.getModifier(stats[1]);
       if(pcClass.getPrimaryStat() == 1 || pcClass.getSecondaryStat() == 1){
          saveMod += getProficiencyBonus();
+      }
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave(true) + saveMod;
       }
       return saveRoll + saveMod;
    }
@@ -327,6 +356,9 @@ public class RPG_Player extends RPG_Character{
       if(pcClass.getPrimaryStat() == 2 || pcClass.getSecondaryStat() == 2){
          saveMod += getProficiencyBonus();
       }
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave(true) + saveMod;
+      }
       return saveRoll + saveMod;
    }
    public int intSave(){
@@ -334,6 +366,9 @@ public class RPG_Player extends RPG_Character{
       int saveMod = RPG_Dice.getModifier(stats[3]);
       if(pcClass.getPrimaryStat() == 3 || pcClass.getSecondaryStat() == 3){
          saveMod += getProficiencyBonus();
+      }
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave(true) + saveMod;
       }
       return saveRoll + saveMod;
    }
@@ -343,6 +378,9 @@ public class RPG_Player extends RPG_Character{
       if(pcClass.getPrimaryStat() == 4 || pcClass.getSecondaryStat() == 4){
          saveMod += getProficiencyBonus();
       }
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave(true) + saveMod;
+      }
       return saveRoll + saveMod;
    }
    public int chaSave(){
@@ -351,7 +389,64 @@ public class RPG_Player extends RPG_Character{
       if(pcClass.getPrimaryStat() == 5 || pcClass.getSecondaryStat() == 5){
          saveMod += getProficiencyBonus();
       }
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave(true) + saveMod;
+      }
       return saveRoll + saveMod;
+   }
+   
+   // save success qualifier overrides
+   private int luckySave(boolean distinguisher){ // distinguisher is only there to ensure overloading works
+      System.out.println("Your inexplicable luck kicked in!");
+      RPG_Optional_Race_Features.luckyUsed = true;
+      return 20;
+   }
+   private boolean luckySave(){
+      System.out.println("Your inexplicable luck kicked in!");
+      RPG_Optional_Race_Features.luckyUsed = true;
+      return true;
+   }
+   public boolean strSave(int DC){
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave();
+      }
+      int saveRoll = strSave();
+      return (saveRoll >= DC);
+   }
+   public boolean dexSave(int DC){
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave();
+      }
+      int saveRoll = dexSave();
+      return (saveRoll >= DC);
+   }
+   public boolean conSave(int DC){
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave();
+      }
+      int saveRoll = conSave();
+      return (saveRoll >= DC);
+   }
+   public boolean intSave(int DC){
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave();
+      }
+      int saveRoll = intSave();
+      return (saveRoll >= DC);
+   }
+   public boolean wisSave(int DC){
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave();
+      }
+      int saveRoll = wisSave();
+      return (saveRoll >= DC);
+   }
+   public boolean chaSave(int DC){
+      if(RPG_Optional_Race_Features.lucky && !RPG_Optional_Race_Features.luckyUsed){ // lucky override
+         return luckySave();
+      }
+      int saveRoll = chaSave();
+      return (saveRoll >= DC);
    }
 
          

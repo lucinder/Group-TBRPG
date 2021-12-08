@@ -137,8 +137,6 @@ public class RPG_Classes_List{
       new int[]{1,4,2},
       new RPG_Item[]{
          RPG_Items_List.ARMORS.SCALE_MAIL,
-         RPG_Items_List.MARTIAL_WEAPONS.SHORTSWORD,
-         RPG_Items_List.MARTIAL_WEAPONS.SHORTSWORD,
          RPG_Items_List.MARTIAL_WEAPONS.LONGBOW,
          RPG_Items_List.EXPLORERS_PACK
       },
@@ -153,11 +151,8 @@ public class RPG_Classes_List{
       new int[]{1,5,3},
       new RPG_Item[]{
          RPG_Items_List.MARTIAL_WEAPONS.RAPIER,
-         RPG_Items_List.SIMPLE_WEAPONS.SHORTBOW,
          RPG_Items_List.EXPLORERS_PACK,
          RPG_Items_List.ARMORS.LEATHER_ARMOR,
-         RPG_Items_List.SIMPLE_WEAPONS.DAGGER,
-         RPG_Items_List.SIMPLE_WEAPONS.DAGGER,
          RPG_Items_List.THIEVES_TOOLS
       }
    );
@@ -171,8 +166,6 @@ public class RPG_Classes_List{
          RPG_Items_List.SIMPLE_WEAPONS.LIGHT_CROSSBOW,
          RPG_Items_List.PLACEHOLDER_ARCANE,
          RPG_Items_List.EXPLORERS_PACK,
-         RPG_Items_List.SIMPLE_WEAPONS.DAGGER,
-         RPG_Items_List.SIMPLE_WEAPONS.DAGGER
       }
    );
    // WARLOCK

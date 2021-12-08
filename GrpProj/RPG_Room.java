@@ -45,8 +45,11 @@ public class RPG_Room {
       roomNumber = idParser[0];
       roomType = idParser[1];
       // once we add a method for processing object id strings- parseObjects(String id)- add that here
-      if(roomType.equals("En") || roomType.equals("EnTrap") || roomType.equals("EnTres") || roomType.equals("EnTrapTres")){
+      if(roomType.equals("En") || roomType.equals("EnTrap") || roomType.equals("EnTres") || roomType.equals("EnTrapTres")){ // add enemies to enemy rooms
          addRandomEnemy();
+      }
+      if(roomType.equals("Trap") || roomType.equals("EnTrap") || roomType.equals("TrapTres") || roomType.equals("EnTrapTres")){ // add traps to trapped rooms
+         addRandomTrap();
       }
       if(roomType.equals("Boss")){
          addRandomBoss();
@@ -60,6 +63,11 @@ public class RPG_Room {
       roomType = idParser[1];
       if(roomType.equals("En") || roomType.equals("EnTrap") || roomType.equals("EnTres") || roomType.equals("EnTrapTres")){
          addRandomEnemy(difficultyOverride);
+      }
+      if(!(difficultyOverride.equals("Easy"))){ // ignore traps in easy mode
+         if(roomType.equals("Trap") || roomType.equals("EnTrap") || roomType.equals("TrapTres") || roomType.equals("EnTrapTres")){
+            addRandomTrap();
+         }
       }
       if(roomType.equals("Boss")){
          addRandomBoss(difficultyOverride);
@@ -166,8 +174,21 @@ public class RPG_Room {
       }
    }
    
-   public ArrayList<RPG_Interactable> getObjects() {
+   public ArrayList<RPG_Interactable> getObjects() { // returns the full list of all objects in the room
       return objects;
+   }
+   
+   public ArrayList<String> getObjectNames(){ // returns a string arraylist of the names of all objects in the room
+      ArrayList<String> objectNames = new ArrayList<String>();
+      for(RPG_Interactable i : objects){
+         objectNames.add(i.getName());
+      }
+      return objectNames;
+   }
+   
+   public void addRandomTrap(){
+      RPG_Trap trap = new RPG_Trap(RPG_Traps_List.BASICTRAPS[(int)(Math.random()*RPG_Traps_List.BASICTRAPS.length)]);
+      objects.add(trap);
    }
    
    public void addRandomEnemy(){

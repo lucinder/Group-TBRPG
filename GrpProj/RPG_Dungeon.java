@@ -31,10 +31,26 @@ public class RPG_Dungeon{
       printRoomDesc();
       System.out.println("What will you do?");
       String[] action = input.nextLine().split(" "); // split the input into a series of words
-      if(contains(action,"inventory")){
+      if(contains(action,"inventory")){ // check inventory
          player.printInventory();
-      } else if(contains(action, "xp")){
+      } else if(contains(action, "hp") || contains(action, "health")){ // check xp
+         System.out.println("Your current HP is [" + player.getHP() + "/" + player.getMaxHP() + "].");
+      } else if(contains(action, "xp")){ // check xp
          System.out.println("You currently have a total of " + player.getTotalXP() + " XP!");
+      } else if(contains(action, "ac")) { // check armor class
+         System.out.println("You currently have an Armor Class of " + player.getAC() + ".");
+      } else if(contains(action, "disarm") || contains(action, "disable")){ // disarm a trap
+         boolean disarmSuccessful = false;
+         for(RPG_Interactable i : DUNGEON_ROOM_CURRENT.getObjects()){
+            if(i instanceof RPG_Trap){ // trap found
+               RPG_Trap trap = (RPG_Trap)i;
+               trap.disable();
+               disarmSuccessful = true;
+            }
+         }
+         if(!disarmSuccessful) { // no traps found
+            System.out.println("You tried to disarm a trap... but there were no traps to disarm!");
+         }
       } else if(contains(action, "move") || contains(action,"go") || contains(action,"proceed")){ // CONTAINS METHOD IS NOT CASE SENSITIVE
          if(contains(action, "n") || contains(action,"north") || contains(action,"up")){
             move("N");
@@ -52,19 +68,27 @@ public class RPG_Dungeon{
       }
       mainLoop(); // loop infinitely unless something in the process of loading rooms/fighting/etc. breaks this loop
    }
+   
    private boolean contains(String[] array, String key){ // helper to check if a string array contains a given string- not case sensitive
       for(String s : array){
          if(s.toLowerCase().equals(key.toLowerCase())){ return true; }
       }
       return false;
    }
+   private boolean contains(RPG_Interactable[] array, String key){
+      for(RPG_Interactable s : array){
+         if(s.getName().toLowerCase().equals(key.toLowerCase())){ return true; }
+      }
+      return false;
+   }
+   
    
    public void loadRoomContents() throws IOException{
       for(RPG_Interactable i : DUNGEON_ROOM_CURRENT.getObjects()){
          i.interactionEvent();
          if(i instanceof RPG_Trap){
             RPG_Trap trap = (RPG_Trap)i;
-            trap.trigger(player);
+            trap.trigger(player); // triggers a trap attack. the trigger method itself handles disabled traps.
          }
          if(i instanceof RPG_Enemy){ // enemy detected?
             RPG_Enemy en = (RPG_Enemy)i;
@@ -76,6 +100,7 @@ public class RPG_Dungeon{
          }
       }
    }
+   
    
    public void printRoomDesc(){
       boolean doorN = DUNGEON_ROOM_CURRENT.hasUp() && DUNGEON_ROOM_CURRENT.isExit("N");
@@ -129,6 +154,7 @@ public class RPG_Dungeon{
       }
       System.out.println(DUNGEON_ROOM_CURRENT.getDialogue());
    }
+   
    
    // move to an adjacent, open square
    public void move(String dir) throws IOException{
@@ -188,9 +214,11 @@ public class RPG_Dungeon{
          }
       }
    }
+   
+   
   public static void combat(RPG_Player player, RPG_Enemy enemy) throws IOException{
-      int playerInit = player.dexSave(); // roll initiative for the player
-      int enInit = enemy.dexSave(); // roll initiative for the enemy
+      int playerInit = player.initiative(); // roll initiative for the player
+      int enInit = enemy.initiative(); // roll initiative for the enemy
       boolean playerFirst = playerInit >= enInit; // compare initiative scores
       int turnNo = 0;
       boolean spareRange = false; // qualifier for the "spare range" of an enemy
@@ -200,13 +228,18 @@ public class RPG_Dungeon{
             Scanner input = new Scanner(System.in);
             int selection = -1;
             boolean actionSelected = false;
+            ArrayList<RPG_Action> actable = new ArrayList<RPG_Action>(); // handles all the actions we CAN execute right now
             while(!actionSelected){
                System.out.println("["+enemy.getName()+": HP " + enemy.getHP() + "/" + enemy.getMaxHP() + "] vs [" + player.getName()+ ": HP " + player.getHP() + "/" + player.getMaxHP() + "]");
                System.out.println("What will " + player.getName() + " do?"); // prompt user for action
+               actable = new ArrayList<RPG_Action>(); // clear actable list
                int i = 0;
                for(RPG_Action a : actions){
-                  System.out.println(" [" + i+"] " + a.getName());
-                  i++;
+                  if(!(a.getName().equals("Dragon Breath") && player.isBreathUsed())){ // skip expended breath attacks
+                     System.out.println(" [" + i+"] " + a.getName());
+                     actable.add(a);
+                     i++;
+                  }
                }
                if(spareRange){
                   System.out.println(" [" + i + "] Spare the Enemy");
@@ -223,9 +256,15 @@ public class RPG_Dungeon{
                   continue; // keep looping until a valid selection is made 
                }
             }
-            if(selection != actions.size()){ // any fight option selected
-               RPG_Action a = actions.get(selection);
+            if(selection != actable.size()){ // any fight option selected
+               RPG_Action a = actable.get(selection);
                a.act(player, enemy);
+               if(a.getName().equals("Dragon Breath")){
+                  player.useBreath(); // expend per-fight breath weapon use
+               }
+               if(!a.getName().equals("Hide")){ // all attacks except for hiding reveal the player's location to the enemy
+                  player.unhide();
+               }
             } else { // spare selected
                enemy.pacify();
             }
