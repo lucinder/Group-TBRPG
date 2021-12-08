@@ -6,9 +6,7 @@ Container file for dungeons (room sets).
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.*;
-import java.util.HashMap;
 public class RPG_Dungeon{
-   private static final HashMap XPperCR = new HashMap(); // putting this here rather than in the enemy class so that we only store and fill 1 copy of it
    // private static RPG_Room[][] DUNGEON_ARRAY;
    private static RPG_Room DUNGEON_ROOM_HEAD;
    private static RPG_Room DUNGEON_ROOM_CURRENT;
@@ -19,17 +17,20 @@ public class RPG_Dungeon{
       player = p;
       DUNGEON_ROOM_HEAD = head;
       DUNGEON_ROOM_CURRENT = head;
-      fillXPMap();
       // System.out.println("TEST- xp for CR 4 creature = " + XPperCR.get(4));
       // System.out.println("Test- xp for a CR 1/8 creature = " + XPperCR.get(0.125));
       mainLoop();
    }
    
    public void mainLoop() throws IOException{
+      if(DUNGEON_ROOM_CURRENT.getIfFinalRoom()){ // have we finished the dungeon?
+         ending();
+         System.exit(0);
+      }
       Scanner input = new Scanner(System.in);
       printRoomDesc();
       System.out.println("What will you do?");
-      String[] action = input.nextLine().toLowerCase().split(" "); // split the input into a series of words
+      String[] action = input.nextLine().split(" "); // split the input into a series of words
       if(contains(action,"inventory")){
          player.printInventory();
       } else if(contains(action, "xp")){
@@ -61,9 +62,13 @@ public class RPG_Dungeon{
    public void loadRoomContents() throws IOException{
       for(RPG_Interactable i : DUNGEON_ROOM_CURRENT.getObjects()){
          i.interactionEvent();
-         if(i instanceof RPG_Enemy){
+         if(i instanceof RPG_Trap){
+            RPG_Trap trap = (RPG_Trap)i;
+            trap.trigger(player);
+         }
+         if(i instanceof RPG_Enemy){ // enemy detected?
             RPG_Enemy en = (RPG_Enemy)i;
-            if(en.getHP() > 0){
+            if(!en.isPacified() && en.getHP() > 0){ // engage battle if enemy is alive and angry
                int[] preCombatStats = player.getStats();
                combat(player, en);
                player.setStats(preCombatStats); // revert any temporary stat changes
@@ -184,10 +189,11 @@ public class RPG_Dungeon{
       }
    }
   public static void combat(RPG_Player player, RPG_Enemy enemy) throws IOException{
-      int playerInit = player.dexSave();
-      int enInit = enemy.dexSave();
-      boolean playerFirst = playerInit >= enInit;
+      int playerInit = player.dexSave(); // roll initiative for the player
+      int enInit = enemy.dexSave(); // roll initiative for the enemy
+      boolean playerFirst = playerInit >= enInit; // compare initiative scores
       int turnNo = 0;
+      boolean spareRange = false; // qualifier for the "spare range" of an enemy
       while(player.getHP() > 0 && enemy.getHP() > 0 && !enemy.isPacified()){
          if((turnNo%2 == 0 && playerFirst) || (turnNo%2 != 0 && !playerFirst)){ // player's turn
             ArrayList<RPG_Action> actions = player.getActions();
@@ -202,10 +208,13 @@ public class RPG_Dungeon{
                   System.out.println(" [" + i+"] " + a.getName());
                   i++;
                }
+               if(spareRange){
+                  System.out.println(" [" + i + "] Spare the Enemy");
+               }
                try{
                   actionSelected = true;
                   selection = Integer.parseInt(input.nextLine());
-                  if(selection >= actions.size()){
+                  if((spareRange && selection > actions.size()) || (!spareRange && selection >= actions.size())){ // overflow handler
                      throw new Exception();
                   }
                } catch(Exception e){ // should catch all non-int input
@@ -214,9 +223,16 @@ public class RPG_Dungeon{
                   continue; // keep looping until a valid selection is made 
                }
             }
-            RPG_Action a = actions.get(selection);
-            a.act(player, enemy);
-         } else { // enemy's turn
+            if(selection != actions.size()){ // any fight option selected
+               RPG_Action a = actions.get(selection);
+               a.act(player, enemy);
+            } else { // spare selected
+               enemy.pacify();
+            }
+            if(enemy.getHPPercent() <= 30.0){ // is the enemy at 30% or less HP?
+               spareRange = true; // enemies at low HP can be spared
+            }
+         } else { // enemy's turn   
             enemy.doAction(player);
          }
          turnNo++;
@@ -227,38 +243,39 @@ public class RPG_Dungeon{
          System.exit(0);
       } else {
          System.out.println("YOU WON!");
-         enemy.die(); // sets the enemy interaction to a corpse
-         // System.out.println("TEST- enemy CR = " + enemy.getCR());
-         int toGain = (int)(XPperCR.getOrDefault(enemy.getCR(), 10));
+         if(!enemy.isPacified()){
+            enemy.die(); // sets the enemy interaction to a corpse
+            player.sin(); // player is no longer a full pacifist
+         }
+         player.rechargeRacialAbilities(); // recharge any expended racial abilities after battle
+         int toGain = enemy.getXP();
          System.out.println(player.getName() + " gained " + toGain + " XP.");
          player.gainXP(toGain);
       }
    }
-   public static double getXP(int CR){ return (double)(XPperCR.get(CR)); }
-   private void fillXPMap(){ // fill xp table with up to CR 20
-      XPperCR.put(0,10);
-      XPperCR.put(0.125,25);
-      XPperCR.put(0.25,50);
-      XPperCR.put(0.5,100);
-      XPperCR.put(1.0,200);
-      XPperCR.put(2.0,450);
-      XPperCR.put(3.0,700);
-      XPperCR.put(4.0,1100);
-      XPperCR.put(5.0,1800);
-      XPperCR.put(6.0,2300);
-      XPperCR.put(7.0,2900);
-      XPperCR.put(8.0,3900);
-      XPperCR.put(9.0,5000);
-      XPperCR.put(10.0,5900);
-      XPperCR.put(11.0,7200);
-      XPperCR.put(12.0,8400);
-      XPperCR.put(13.0,10000);
-      XPperCR.put(14.0,11500);
-      XPperCR.put(15.0,13000);
-      XPperCR.put(16.0,15000);
-      XPperCR.put(17.0,18000);
-      XPperCR.put(18.0,20000);
-      XPperCR.put(19.0,22000);
-      XPperCR.put(20.0,25000);
+   
+   public void ending(){ // GAME ENDING
+      System.out.println("As your final foe yields before you, you feel a cool breeze wash over your body.");
+      System.out.println("The final door, leading to the surface, is ajar. Rays of sunlight flickers in from the other side.");
+      System.out.println("Proceed?");
+      // FINAL CHOICE
+      Scanner input = new Scanner(System.in);
+      String[] action = input.nextLine().split(" ");
+      if(contains(action,"n") || contains(action, "no") || contains(action, "not")){
+       // Stay in the dungeon
+         System.out.println("Despite everything, you decide to stay behind.");
+         if(player.isPacifist()){
+            System.out.println("With the many friends you\'ve made down here, you live a peaceful life in the dungeon as its new champion.");
+         } else {
+            System.out.println("It\'s a lonely life down here, but you stake your claim as the new champion of the dungeon.");
+         }
+      }
+      else if(contains(action, "y") || contains(action, "yes") || contains(action, "proceed")){
+         // Leave the dungeon
+         System.out.println("Pushing open the final door all the way, you step into the sunlight, ready to begin your life anew on the surface.");
+         if(player.isPacifist()){
+            System.out.println("Your friends from the dungeon call out to you, saying goodbye and cheering you on as you take on the world above!");
+         }
+      }
    }
 }

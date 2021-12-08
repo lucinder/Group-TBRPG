@@ -16,6 +16,9 @@ public class RPG_DungeonBuilder{
                cur.unlockExit("E");
                cur.setRight(new RPG_Room(idNo+"_Boss")); // add boss room
                cur = cur.getRight();
+               if(i == levels-1){ // are we in the VERY last room?
+                  cur.setFinalRoom();
+               }
                cur.unlockExit("W"); // unlock boss room
                // System.out.println(cur.getID());
             } else { 

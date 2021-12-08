@@ -20,8 +20,11 @@ public class RPG_Interactable{
          System.out.println("You weren\'t sure whether you could " + eventKey + " with  the " + name + ".");
       }
    }
+   public String getName(){
+      return this.name;
+   }
    public String getDialogue(){
-      return dialogue;
+      return this.dialogue;
    }
    public void setDialogue(String newDialogue){
       this.dialogue = newDialogue;

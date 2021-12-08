@@ -13,6 +13,8 @@ public class RPG_Character extends RPG_Interactable{
    int[] stats = RPG_Dice.randchar(); // {STR, DEX, CON, INT, WIS, CHA}
    private int hpMax = 1; // max hp
    private int hpCur = 1; // current hp
+   private int mpMax = 0;
+   private int mpCur = 0;
    private int AC = 10;
    private ArrayList<RPG_Item> inventory = new ArrayList<RPG_Item>();
    private ArrayList<RPG_Action> actions = new ArrayList<RPG_Action>();
@@ -50,7 +52,6 @@ public class RPG_Character extends RPG_Interactable{
       for(RPG_Item i : inventory){
          addItem(i);
       }
-      loadInventory();
    }
    
    public RPG_Character(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions){
@@ -75,7 +76,6 @@ public class RPG_Character extends RPG_Interactable{
       for(RPG_Item i : inventory){
          addItem(i);
       }
-      loadInventory();
    }
    // getters setters
    public String getName(){ return name; }
@@ -262,7 +262,7 @@ public class RPG_Character extends RPG_Interactable{
       }
    }
    
-   public static int getProficiencyBonus(){ // Default character prof bonus is 2; modified to be based on CR or level based on subclass
+   public int getProficiencyBonus(){ // Default character prof bonus is 2; modified to be based on CR or level based on subclass
       return 2;
    }
    

@@ -8,7 +8,7 @@ public class RPG_Enemies_List{
          new RPG_Action(RPG_Character.DONOTHING)
       },
       new RPG_Item[]{},
-      0
+      10
    );
    static RPG_Enemy ANGRYDUMMY = new RPG_Enemy(
       "Mad Dummy",
@@ -20,7 +20,7 @@ public class RPG_Enemies_List{
          new RPG_Attack(RPG_Character.UNARMED_STRIKE)
       },
       new RPG_Item[]{},
-      0.125
+      25
    );
    static RPG_Enemy BOSSDUMMY = new RPG_Enemy(
       "Boss Dummy",
@@ -34,7 +34,7 @@ public class RPG_Enemies_List{
          new RPG_Weapon(RPG_Items_List.MARTIAL_WEAPONS.LONGSWORD),
          new RPG_Weapon(RPG_Items_List.MARTIAL_WEAPONS.LONGBOW)
       },
-      4,
+      1100,
       true
    );
 

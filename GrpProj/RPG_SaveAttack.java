@@ -36,10 +36,24 @@ public class RPG_SaveAttack extends RPG_Attack{
          } else if(target.getWeaknesses().contains(this.getType())){ // is the target weak to the damage?
             damage *= 2;
          }
-         say(user.getName(), target.getName(), damage, true, false); // save attacks cannot crits
+         say(user.getName(), target.getName(), damage, true, false, false); // save attacks cannot crit
          target.takeDamage(damage);
       } else {
-         say(user.getName(), target.getName(), 0, false, false);
+         say(user.getName(), target.getName(), 0, false, false, false);
+      }
+   }
+   public void act(String actor, RPG_Character target, boolean isTrap){ // overload for traps and non-character entities
+      if(!makesSave(target)){
+         int damage = rollDamage();
+         if(target.getResistances().contains(this.getType())){ // is the damage resisted?
+            damage /= 2;
+         } else if(target.getWeaknesses().contains(this.getType())){ // is the target weak to the damage?
+            damage *= 2;
+         }
+         say(actor, target.getName(), damage, true, false, isTrap); // save attacks cannot crit
+         target.takeDamage(damage);
+      } else {
+         say(actor, target.getName(), 0, false, false, isTrap);
       }
    }
 }

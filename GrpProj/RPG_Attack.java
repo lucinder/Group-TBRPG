@@ -1,3 +1,8 @@
+/**
+@author Lucinder
+@file RPG_Attack.java
+A basic attack action with a full attack roll and dialogue included.
+**/
 import java.util.Arrays;
 public class RPG_Attack extends RPG_Action{
    private String type = "Damage";
@@ -69,6 +74,7 @@ public class RPG_Attack extends RPG_Action{
       if(damage < 0){ damage = 0; } // discard negative damage
       return damage;
    }
+   
    /**
    public int fullRoll(int AC){
       int hitRoll = rollToHit();
@@ -103,21 +109,48 @@ public class RPG_Attack extends RPG_Action{
          }
          if(isCrit(hitRoll)){ // double damage on a crit
             damage *= 2; 
-            say(user.getName(), target.getName(), damage, true, true);
+            say(user.getName(), target.getName(), damage, true, true, false);
          } else { 
-            say(user.getName(), target.getName(), damage, true, false);
+            say(user.getName(), target.getName(), damage, true, false, false);
          }
          target.takeDamage(damage);
       } else {
-         say(user.getName(), target.getName(), 0, false, false);
+         say(user.getName(), target.getName(), 0, false, false, false);
       }
    }
-   public void say(String user, String target, int dmgValue, boolean isHit, boolean isCrit){
+   
+   public void act(String actor, RPG_Character target, boolean isTrap){ // overload for traps or non-character entities
+      int hitRoll = rollToHit();
+      if(hitRoll > target.getAC()){
+         int damage = rollDamage();
+         if(target.getResistances().contains(this.type)){ // is the damage resisted?
+            damage /= 2;
+         } else if(target.getWeaknesses().contains(this.type)){ // is the target weak to the damage?
+            damage *= 2;
+         }
+         if(isCrit(hitRoll)){ // double damage on a crit
+            damage *= 2; 
+            say(actor, target.getName(), damage, true, true, isTrap);
+         } else { 
+            say(actor, target.getName(), damage, true, false, isTrap);
+         }
+         target.takeDamage(damage);
+      } else {
+         say(actor, target.getName(), 0, false, false, isTrap);
+      }
+   }
+
+
+   public void say(String user, String target, int dmgValue, boolean isHit, boolean isCrit, boolean isTrap){
       if (type.equals("Healing")){
          System.out.print(user + " heals the " + target + "! ");
          System.out.println(target + " regained " + dmgValue + " HP!");
       } else {
-         System.out.println(user + super.getDesc());
+         if(!isTrap){
+            System.out.println(user + super.getDesc());
+         } else {
+            System.out.println("A " + user + " triggered!"); // A TRAP triggered!
+         }
          if(isHit){
             if(isCrit){
                System.out.println("Critical hit!");

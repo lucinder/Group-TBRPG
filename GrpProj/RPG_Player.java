@@ -30,6 +30,7 @@ public class RPG_Player extends RPG_Character{
       private static boolean savage = false; // character has the savage attacks feature?
    }
    
+   private boolean pacifist = true; // has the character spared all enemies so far?
    private static int level = 1;
    private static int totalXP = 0;
    private RPG_Race pcRace = new RPG_Race();
@@ -150,6 +151,12 @@ public class RPG_Player extends RPG_Character{
          if(rf.getName().equals("Brave")){
             addConditionAdvantage("Frightened");
          }
+         if(rf.getName().equals("Relentless Endurance")){
+            RPG_Optional_Race_Features.relentless = true; // relentless
+         }
+         if(rf.getName().equals("Savage Attacks")){
+            RPG_Optional_Race_Features.savage = true;
+         }
          // tba: infernal legacy
       }
    }
@@ -263,8 +270,25 @@ public class RPG_Player extends RPG_Character{
       }
    }
    
+   public boolean isPacifist(){ // has the player killed NO enemies?
+      return this.pacifist;
+   }
+   
+   public void sin(){ // called if an enemy is killed. sets the pacifist field to false
+      this.pacifist = false;
+   }
+   
+   public void rechargeRacialAbilities(){ // called after battle. recharges the lucky, relentless, and breath weapon features.
+      // recharge relentless
+      RPG_Optional_Race_Features.relentlessUsed = false;
+      // recharge lucky
+      RPG_Optional_Race_Features.luckyUsed = false;
+      // recharge breath weapon
+      RPG_Optional_Race_Features.breathWeaponUsed = false;
+   }
+   
    // prof bonus
-   public static int getProficiencyBonus(){
+   public int getProficiencyBonus(){
       int profBonus = 2;
       if(level > 4){
          if(level < 9){

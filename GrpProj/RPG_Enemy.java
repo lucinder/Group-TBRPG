@@ -7,37 +7,43 @@ To be added: action randomization (selection) and execution in-battle
 **/
 import java.util.ArrayList;
 public class RPG_Enemy extends RPG_Character{
-   private static double CR = 0.25; // enemy CR: default 1/4
-   private static boolean isBoss = false;
+   private RPG_XPMap xpmap = new RPG_XPMap();
+   private int XP = 10; // enemy XP: default 10
+   private boolean isBoss = false;
    private boolean pacified = false;
-   public RPG_Enemy(){super();}
+   public RPG_Enemy(){super(); defaultSettings();}
    public RPG_Enemy(RPG_Enemy toCopy){ // copy constructor
       super(toCopy.getName(), toCopy.getMaxHP(), toCopy.getStats(), toCopy.getAC(), toCopy.getActionsArray(), toCopy.getInventoryArray());
-      this.CR = toCopy.getCR();
+      defaultSettings();
+      this.XP = toCopy.getXP();
       this.isBoss = toCopy.getIfBoss();
       setDialogue("A wild " + toCopy.getName() + " appeared!");
       if(this.isBoss){
          setDialogue("The mighty " + toCopy.getName() + " blocks the path!");
       }
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, double CR){
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, int XP){
       super(name, hpMax, stats, AC, actions);
-      this.CR = CR;
+      defaultSettings();
+      this.XP = XP;
       setDialogue("A wild " + name + " appeared!");
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Item[] inventory, double CR){
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Item[] inventory, int XP){
       super(name, hpMax, stats, AC, inventory);
-      this.CR = CR;
+      defaultSettings();
+      this.XP = XP;
       setDialogue("A wild " + name + " appeared!");
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, double CR){
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, int XP){
       super(name, hpMax, stats, AC, actions, inventory);
-      this.CR = CR;
+      defaultSettings();
+      this.XP = XP;
       setDialogue("A wild " + name + " appeared!");
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, double CR, boolean isBoss){
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, int XP, boolean isBoss){
       super(name, hpMax, stats, AC, actions, inventory);
-      this.CR = CR;
+      defaultSettings();
+      this.XP = XP;
       this.isBoss = isBoss;
       setDialogue("A wild " + name + " appeared!");
       // System.out.println("TEST- is boss? " + this.isBoss);
@@ -45,9 +51,21 @@ public class RPG_Enemy extends RPG_Character{
          setDialogue("The mighty " + name + " blocks the path!");
       }
    }
-   public static boolean getIfBoss(){ return isBoss; }
-   public static double getCR(){ return CR; }
-   public static int getProficiencyBonus(){
+   private void defaultSettings(){ // sets all fields to their defaults. mostly for debugging
+      this.xpmap = new RPG_XPMap();
+      this.XP = 10;
+      this.isBoss = false;
+      this.pacified = false;
+      loadInventory(); // inventory loading must be done AFTER the xp map is added so that proficiency bonuses can be calculated!
+   }
+   public boolean getIfBoss(){ return isBoss; }
+   public int getXP(){ return this.XP; }
+   public double getCR(){ 
+      System.out.println("DEBUG- XP = " + this.XP+", so CR = " + xpmap.map.get(this.XP));
+      return (xpmap.map.get(this.XP));
+   }
+   public int getProficiencyBonus(){
+      double CR = getCR();
       return 2 + (int)(sgn(CR - 1) * (Math.abs(CR - 1)/4));
    }
    private static int sgn(double x){ // get the signature of x
@@ -59,7 +77,13 @@ public class RPG_Enemy extends RPG_Character{
       RPG_Action action = super.getActions().get((int)(Math.random()*(super.getActions().size())));
       action.act(this, target);
    }
+   public double getHPPercent(){
+      return 100.0*(getCurrentHP()/((double)getMaxHP()));
+   }
    public boolean isPacified(){ return pacified; } // is the enemy pacified (beat fight without killing)?
-   public void pacify(){ pacified = true; } // pacify the enemy
+   public void pacify(){ // pacify the enemy 
+      pacified = true; 
+      setDialogue("A friendly " + getName() + " greets you as you pass through!");
+   } 
    public void die(){ setDialogue("The corpse of a " + getName() + " lays rotting."); }
 }

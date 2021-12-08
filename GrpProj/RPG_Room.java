@@ -6,6 +6,7 @@ A Room class, containing a list of interactables and defined set of exits.
 **/
 import java.util.ArrayList;
 public class RPG_Room {
+   private boolean isFinalRoom = false;
    private String roomNumber = "0";
    // Room #0 is the generic ID for a "wall" or placeholder room.
    // Room #1, the starting room, must have a path to every other room in the dungeon with at least 1 door.
@@ -65,6 +66,13 @@ public class RPG_Room {
    }
    public void setType(String roomType) {
       this.roomType = roomType;
+   }
+   
+   public boolean getIfFinalRoom(){ // Are we in the final room of the dungeon?
+      return this.isFinalRoom;
+   }
+   public void setFinalRoom(){ // set this room to the very final room in the dungeon.
+      this.isFinalRoom = true;
    }
    
    public boolean[] getExits() {
@@ -150,6 +158,7 @@ public class RPG_Room {
    }
    
    public void addRandomEnemy(){
+      /**
       int cr = 0;
       if(roomNumber.charAt(roomNumber.length()-1) == 'n' || roomNumber.charAt(roomNumber.length()-1) == 's'){
          cr = Integer.parseInt(roomNumber.substring(0,roomNumber.length()-1)); // cut off last character
@@ -157,8 +166,11 @@ public class RPG_Room {
          cr = Integer.parseInt(roomNumber);
       }
       cr /= RPG_Dungeon.CR_DIVISION;
+      **/
       // TBA: Selection based on cr
-      RPG_Enemy enemy = new RPG_Enemy(RPG_Enemies_List.test[(int)(Math.random()*RPG_Enemies_List.test.length)]); // send an existing enemy to a copy constructor so each can be treated differently
+      int enemyID = (int)(Math.random()*RPG_Enemies_List.test.length);
+      System.out.println("DEBUG - Enemy ID = " + enemyID);
+      RPG_Enemy enemy = new RPG_Enemy(RPG_Enemies_List.test[enemyID]); // send an existing enemy to a copy constructor so each can be treated differently
       objects.add(enemy); // add enemy to objects array
    }
    
