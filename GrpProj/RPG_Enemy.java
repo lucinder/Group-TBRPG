@@ -13,7 +13,7 @@ public class RPG_Enemy extends RPG_Character{
    private boolean isBoss = false;
    private boolean pacified = false;
    public boolean canSpare = false;
-   public RPG_Enemy() {super(); defaultSettings();}
+   public RPG_Enemy() throws Exception, InterruptedException {super(); defaultSettings();}
    public RPG_Enemy(RPG_Enemy toCopy) throws InterruptedException{ // copy constructor
       super(toCopy.getName(), toCopy.getMaxHP(), toCopy.getStats(), toCopy.getAC(), toCopy.getActionsArray(), toCopy.getInventoryArray());
       // defaultSettings();
@@ -25,7 +25,7 @@ public class RPG_Enemy extends RPG_Character{
          setDialogue("The mighty " + toCopy.getName() + " blocks the path!");
       }
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, int XP) throws InterruptedException{
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, int XP) throws InterruptedException, Exception{
       super(name, hpMax, stats, AC, actions);
       // defaultSettings();
       this.XP = XP;

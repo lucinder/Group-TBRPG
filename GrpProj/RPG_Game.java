@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 public class RPG_Game{
-   public static void start() throws IOException,InterruptedException{
+   public static void start() throws IOException,InterruptedException, Exception{
       // intro();
       int levels = 5;
       int levelLength = 5;
@@ -15,7 +15,7 @@ public class RPG_Game{
    }
    
    // DEBUG MODE INITIALIZER
-   public static void start(boolean debugMode) throws IOException,InterruptedException{
+   public static void start(boolean debugMode) throws IOException,InterruptedException, Exception{
       // Debug mode skips intro!
       if(!debugMode){
          start(); // play game as normal

@@ -13,7 +13,7 @@ public class RPG_Character_Tester{
    public static RPG_Races_List RACE_LIST = new RPG_Races_List();
    static Scanner input = new Scanner(System.in);
    private static RPG_Player player;
-   public static void main(String[] args) throws IOException{
+   public static void main(String[] args) throws IOException, InterruptedException, Exception{
       System.out.println("Enter \'Q\' to quit at any time!");
       boolean namePicked = false;
       boolean classPicked = false;
@@ -57,7 +57,7 @@ public class RPG_Character_Tester{
       
       testAPI();
    }
-   public static void testAPI(){
+   public static void testAPI() throws InterruptedException, Exception {
       String cmdPrompt = "What will you do?\n[1] Test saving throws\n[2] Test weapon attacks\n[3] Print inventory\n[4] Show action list";
       String next = input.nextLine();
       while(!next.equals("Q")){
@@ -88,7 +88,7 @@ public class RPG_Character_Tester{
       System.out.println(player.getName() + " makes a Charisma saving throw! Result: " +  saves[5] + ". Success? " + player.save(saves[5], DC));
    }
    
-   public static void rollAttacks(){
+   public static void rollAttacks() throws Exception{
       System.out.println("Enter the AC for the attack rolls: ");
       int AC = input.nextInt();
       System.out.println("The AC for the following rolls is " + AC);

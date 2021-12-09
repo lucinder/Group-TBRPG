@@ -295,7 +295,7 @@ public class Combat{
     /*While combat is ongoing, loops through all turns in the
     initiative order
     */
-    public void startCombat() {
+    public void startCombat() throws InterruptedException {
         combatNode curr = initiative;
         combatNode after = initiative.getNext();
 

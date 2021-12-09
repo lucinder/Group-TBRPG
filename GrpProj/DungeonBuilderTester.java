@@ -1,5 +1,5 @@
 public class DungeonBuilderTester{
-   public static void main(String[] args){
+   public static void main(String[] args) throws InterruptedException, Exception{
       int levels = 3;
       int levelLength = 3;
       System.out.println("Dungeon of " + levels + " levels with " + levelLength + " main rooms per level:");

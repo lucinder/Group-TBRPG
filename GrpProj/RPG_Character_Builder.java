@@ -13,7 +13,7 @@ public class RPG_Character_Builder{
    public static RPG_Races_List RACE_LIST = new RPG_Races_List();
    static Scanner input = new Scanner(System.in);
    private static RPG_Player player;
-   public static RPG_Player buildCharacter() throws IOException{
+   public static RPG_Player buildCharacter() throws IOException, InterruptedException{
       String raceOptions = "\nAvailable races:\n Human (all +1)\n Elf (dex +2, any +1)\n Dwarf (con +2, any +1)\n Half-Orc (str +2, con +1)\n Goblin (dex +2, con +1)\n Gnome (int +2, any +1)\n Tiefling (cha +2, int +1)\n Dragonborn (str +2, cha +1)\n Halfling (dex +2, any +1)";
       String classOptions = "\nAvailable classes:\n Artificer\n Barbarian\n Bard\n Cleric\n Druid\n Fighter\n Monk\n Paladin\n Ranger\n Rogue\n Sorcerer\n Warlock\n Wizard";
       System.out.println("Enter \'Q\' to quit at any time!");
