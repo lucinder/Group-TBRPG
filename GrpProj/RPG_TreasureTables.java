@@ -78,7 +78,6 @@ public class RPG_TreasureTables{
       ArrayList<RPG_Item> treasure = new ArrayList<RPG_Item>();
       int baseGP = RPG_Dice.XdY(2,6)*10;
       int additionalGP = 0;
-      treasure.add(new RPG_Item("Gold",1,baseGP));
       int mainResult = (int)(Math.random()*17);
       // on a 0, put nothing
       if(mainResult == 1 || mainResult == 4 || mainResult == 7 || mainResult == 10){
@@ -88,7 +87,7 @@ public class RPG_TreasureTables{
       } else if(mainResult == 3 || mainResult == 6 || mainResult == 9 || mainResult == 12 || mainResult == 14 || mainResult == 16){
          additionalGP = RPG_Dice.XdY(2,6)*50;
       }
-      treasure.add(new RPG_Item("Gold",1,additionalGP));
+      treasure.add(new RPG_Item("Gold",1,baseGP + additionalGP));
       int tableRolls = RPG_Dice.XdY(1,6);
       int tableRollsB = RPG_Dice.XdY(1,4);
       if(mainResult == 4 || mainResult == 5 || mainResult == 6){ // table A

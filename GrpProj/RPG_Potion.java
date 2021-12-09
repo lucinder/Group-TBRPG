@@ -3,8 +3,8 @@
 @file RPG_Potion.java
 **/
 public class RPG_Potion extends RPG_Weapon{
-   int[] tempStatBonuses = {0,0,0,0,0,0}; // some potions will temporarily change stats
-   int[] tempStatOverrides = {0,0,0,0,0,0};
+   boolean isOverride; // does the stat modifier array override stats or just buff them?
+   int[] tempStats = {0,0,0,0,0,0}; // some potions will temporarily change stats
    // constructor overrides
    public RPG_Potion(String name, int quantity, int value, int[] healDice){
       super(name, quantity, value, healDice);
@@ -16,25 +16,22 @@ public class RPG_Potion extends RPG_Weapon{
    }
    public RPG_Potion(String name, int quantity, int value, boolean isOverride, int[] tempStatMods){
       super(name, quantity, value, new int[]{0,0}); // no healing
-      if(!isOverride){
-         this.tempStatBonuses = tempStatMods;
-      } else {
-         this.tempStatOverrides = tempStatMods;
-      }
+      this.setDamageType("Buff");
+      this.isOverride = isOverride;
+      this.tempStats = tempStatMods;
    }
    public RPG_Potion(RPG_Potion other){ // copy constr
       super(other.getName(), other.getQuantity(), other.getValue(), other.getDamageDice(), other.getMagicBonus());
-      this.tempStatBonuses = other.getStatBonuses();
-      this.tempStatOverrides = other.getStatOverrides();
+      this.tempStats = other.getStatMods();
       this.setDamageType(other.getDamageType());
    }
    
    // getters setters
-   public int[] getStatBonuses(){ return tempStatBonuses; }
-   public int[] getStatOverrides(){ return tempStatOverrides; }
+   public boolean getIfOverride(){ return isOverride; }
+   public int[] getStatMods(){ return tempStats; }
    public void setHealingMod(int newMod){ this.setMagicBonus(newMod); }
-   public void setStatBonuses(int[] newStatMods){ this.tempStatBonuses = newStatMods; }
-   public void setStatOverrides(int[] newStatMods){ this.tempStatOverrides = newStatMods; }
+   public void setStatBonuses(int[] newStatMods){ this.tempStats = newStatMods; }
+   public void toggleOverride(){ this.isOverride = !this.isOverride; }
    public int rollHealing(){
       return super.rollDamage();
    }

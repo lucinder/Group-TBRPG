@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.io.*;
 public class RPG_Dungeon{
    // private static RPG_Room[][] DUNGEON_ARRAY;
+   int[] preCombatStats;
    private static RPG_Room DUNGEON_ROOM_HEAD;
    private static RPG_Room DUNGEON_ROOM_CURRENT;
    public static final int CR_DIVISION = 5; // how many rooms should an interval of 1 CR be (for enemy generation)?
@@ -101,12 +102,9 @@ public class RPG_Dungeon{
       return false;
    }
    
-   
    public void loadRoomContents() throws IOException{
       for(RPG_Interactable i : DUNGEON_ROOM_CURRENT.getObjects()){
-         if(!(i instanceof RPG_Treasure)){
-            i.interactionEvent();
-         }
+         i.interactionEvent();
          if(i instanceof RPG_Trap){
             RPG_Trap trap = (RPG_Trap)i;
             trap.trigger(player); // triggers a trap attack. the trigger method itself handles disabled traps.
@@ -114,9 +112,7 @@ public class RPG_Dungeon{
          if(i instanceof RPG_Enemy){ // enemy detected?
             RPG_Enemy en = (RPG_Enemy)i;
             if(!en.isPacified() && en.getHP() > 0){ // engage battle if enemy is alive and angry
-               int[] preCombatStats = player.getStats();
                combat(player, en);
-               player.setStats(preCombatStats); // revert any temporary stat changes
             }
          }
       }
@@ -172,9 +168,6 @@ public class RPG_Dungeon{
          }
       } else if (doorW){ // W
          System.out.println("There is a door to the west.");
-      }
-      if(DUNGEON_ROOM_CURRENT.getType().equals("Tres") || DUNGEON_ROOM_CURRENT.getType().equals("EnTres") || DUNGEON_ROOM_CURRENT.getType().equals("TrapTres") || DUNGEON_ROOM_CURRENT.getType().equals("EnTrapTres")){
-         System.out.println("A treasure chest lies on the ground.");
       }
       System.out.println(DUNGEON_ROOM_CURRENT.getDialogue());
    }
@@ -241,6 +234,7 @@ public class RPG_Dungeon{
    
    
   public void combat(RPG_Player player, RPG_Enemy enemy) throws IOException{
+      preCombatStats = player.getStats().clone(); // pass by value
       int playerInit = player.initiative(); // roll initiative for the player
       int enInit = enemy.initiative(); // roll initiative for the enemy
       boolean playerFirst = playerInit >= enInit; // compare initiative scores
@@ -285,7 +279,7 @@ public class RPG_Dungeon{
             if(selection != actable.size()){ // any fight option selected
                RPG_Action a = actable.get(selection);
                if(contains(a.getName().split(" "), "Potion")){
-                  a.act(player,player); // heal SELF
+                  a.act(player,player); // heal or buff SELF
                   player.useItem(a.getName()); // remove expendable items after use
                } else {
                   a.act(player, enemy);
@@ -299,7 +293,8 @@ public class RPG_Dungeon{
             } else { // spare selected
                enemy.pacify();
             }
-            if(enemy.getHPPercent() <= 30.0){ // is the enemy at 30% or less HP?
+            if(!enemy.isPacified() && enemy.getHPPercent() <= 30.0){ // is the enemy at 30% or less HP?
+               System.out.println("The " + enemy.getName() + " is trembling with fear.");
                spareRange = true; // enemies at low HP can be spared
             }
          } else { // enemy's turn   
@@ -313,6 +308,7 @@ public class RPG_Dungeon{
          System.exit(0);
       } else {
          System.out.println("YOU WON!");
+         player.setStats(preCombatStats); // revert any temporary stat changes
          if(!enemy.isPacified()){
             enemy.die(); // sets the enemy interaction to a corpse
             player.sin(); // player is no longer a full pacifist

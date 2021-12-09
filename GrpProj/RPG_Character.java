@@ -103,6 +103,12 @@ public class RPG_Character extends RPG_Interactable{
    public ArrayList<String> getResistances(){ return damageResistances; }
    public ArrayList<String> getWeaknesses(){ return damageWeaknesses; }
    public void setStats(int[] newStats){ stats = newStats; }
+   public void setStr(int newStat){ stats[0] = newStat; }
+   public void setDex(int newStat){ stats[1] = newStat; }
+   public void setCon(int newStat){ stats[2] = newStat; }
+   public void setInt(int newStat){ stats[3] = newStat; }
+   public void setWis(int newStat){ stats[4] = newStat; }
+   public void setCha(int newStat){ stats[5] = newStat; }
    public void addToStr(int toAdd){ stats[0] += toAdd; }
    public void addToDex(int toAdd){ stats[1] += toAdd; }
    public void addToCon(int toAdd){ stats[2] += toAdd; }
@@ -230,6 +236,10 @@ public class RPG_Character extends RPG_Interactable{
                mod += strModifier(); // use str mod
             }
             RPG_Attack weaponattack = new RPG_Attack(weapon, mod, getProficiencyBonus());
+            if(weapon instanceof RPG_Potion && weapon.getDamageType().equals("Buff")){ // detect stat-modifying potions
+               RPG_Potion pot = (RPG_Potion)weapon;
+               weaponattack = new RPG_Buff(pot);
+            }
             if(hasAction(weaponattack.getName())){
                replaceAction(weaponattack.getName(),weaponattack);
             } else {

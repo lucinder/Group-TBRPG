@@ -90,23 +90,6 @@ public class RPG_Player extends RPG_Character{
       loadArmorClass();
    }
    
-   // XP AND LEVELING
-   public int getTotalXP(){ return totalXP; }
-   public void gainXP(int toAdd){ // gain experience
-      this.totalXP += toAdd;
-      if(level < 20 && totalXP > XPtoLevelUp[level]){ levelUp(); } // levelup if the leveling roster is met
-   }
-   public void levelUp(){
-      System.out.println("LEVEL UP!");
-      level++;
-      int mod = super.conModifier(); if(mod < 0){ mod = 0; } // hp gain mod
-      int hpToAdd = mod + RPG_Dice.XdY(1,pcClass.getHitDie()); // roll HP gain
-      setMaxHP(getMaxHP() + hpToAdd);
-      setHP(getHP() + hpToAdd);
-      System.out.println("Max HP increased by " + hpToAdd + ".");
-      // ASI handler to be added
-   }
-   
    private void loadArmorClass(){  // load unarmored defense for monk/barbarian classes or armor for classes that start with it
       int unarmoredDefense = 10 + RPG_Dice.getModifier(super.getStats()[1]);
       int shieldBonus = 0;
@@ -286,6 +269,23 @@ public class RPG_Player extends RPG_Character{
    }
    public void useBreath(){
       RPG_Optional_Race_Features.breathWeaponUsed = true;
+   }
+   
+   // XP AND LEVELING
+   public int getTotalXP(){ return totalXP; }
+   public void gainXP(int toAdd){ // gain experience
+      this.totalXP += toAdd;
+      if(level < 20 && totalXP > XPtoLevelUp[level]){ levelUp(); } // levelup if the leveling roster is met
+   }
+   public void levelUp(){
+      System.out.println("LEVEL UP!");
+      level++;
+      int mod = super.conModifier(); if(mod < 0){ mod = 0; } // hp gain mod
+      int hpToAdd = mod + RPG_Dice.XdY(1,pcClass.getHitDie()); // roll HP gain
+      setMaxHP(getMaxHP() + hpToAdd);
+      setHP(getHP() + hpToAdd);
+      System.out.println("Max HP increased by " + hpToAdd + ".");
+      // ASI handler to be added
    }
    
    // Hide action related things

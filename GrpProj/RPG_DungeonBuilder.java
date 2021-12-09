@@ -15,7 +15,8 @@ public class RPG_DungeonBuilder{
             if(j == levelLength){
                cur.setUp(new RPG_Room(idNo+"n_Shop")); // add shop room to the north
                cur.unlockExit("N");
-               System.out.println("DEBUG - Room ID = " + cur.getUp().getID());
+               cur.getUp().unlockExit("S");
+               // System.out.println("DEBUG - Room ID = " + cur.getUp().getID());
                cur.setRight(new RPG_Room(idNo+"_Boss")); // add boss room
                cur.unlockExit("E");
                cur = cur.getRight();
@@ -77,6 +78,7 @@ public class RPG_DungeonBuilder{
             if(j == levelLength){
                cur.setUp(new RPG_Room(idNo+"n_Shop")); // add shop room to the north
                cur.unlockExit("N");
+               cur.getUp().unlockExit("S");
                System.out.println("DEBUG - Room ID = " + cur.getUp().getID());
                cur.setRight(new RPG_Room(idNo+"_Boss")); // add boss room
                cur.unlockExit("E");
