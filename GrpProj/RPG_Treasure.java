@@ -21,7 +21,7 @@ public class RPG_Treasure extends RPG_Interactable{
          System.out.println("An empty treasure chest lies on the ground.");
       }
    }
-   public void interactionEvent(RPG_Player player){
+   public void interactionEvent(RPG_Player player) throws InterruptedException{
       if(looted){ // if we've looted the chest, display that it's empty and cut the loot method short
          System.out.println("The treasure chest is empty.");
          return;
