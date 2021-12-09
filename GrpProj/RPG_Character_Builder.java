@@ -25,7 +25,7 @@ public class RPG_Character_Builder{
       String name = "";
       System.out.print("Enter your character's name: ");
       String next = input.nextLine();
-      while(!next.equals("Q")){
+      while(!next.toUpperCase().equals("Q")){
          if(!namePicked){
             name = next;
             namePicked = true;
@@ -56,7 +56,7 @@ public class RPG_Character_Builder{
             }
          }
          next = input.nextLine();
-         if(next.equals("Q")){ System.exit(0); }
+         if(next.toUpperCase().equals("Q")){ System.exit(0); }
       }
       player = new RPG_Player(name, race, clss); // initialize new player
       System.out.println(player);

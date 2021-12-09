@@ -6,6 +6,22 @@ A Room class, containing a list of interactables and defined set of exits.
 **/
 import java.util.ArrayList;
 public class RPG_Room {
+   public static final int TEXTDELAY = 20;
+   public static final int LINEDELAY = 0;
+   
+   public static void printStaggered(String input) throws InterruptedException{
+      printStaggered(input, TEXTDELAY);
+   }
+   public static void printStaggered(String input, int delayMS) throws InterruptedException{ // ONLY works for single-line commands
+      String[] toPrint = input.split("");
+      for(String s : toPrint){
+         System.out.print(s);
+         Thread.sleep(delayMS);
+      }
+      System.out.println();
+      Thread.sleep(LINEDELAY);
+   }
+
    private boolean isFinalRoom = false;
    private String roomNumber = "0";
    // Room #0 is the generic ID for a "wall" or placeholder room.
@@ -105,7 +121,7 @@ public class RPG_Room {
    public boolean[] getExits() {
       return exits;
    }
-   public boolean isExit(String direction){
+   public boolean isExit(String direction) throws InterruptedException{
       if(direction.equals("N")){
          return exits[0];
       } else if(direction.equals("E")){
@@ -115,11 +131,11 @@ public class RPG_Room {
       } else if(direction.equals("W")){
          return exits[3];
       } else {
-         System.out.println("ERROR: Invalid direction!");
+         printStaggered("ERROR - Invalid direction!");
          return false;
       }
    }
-   public void lockExit(String direction){ // remove/lock the exit in a given direction
+   public void lockExit(String direction) throws InterruptedException{ // remove/lock the exit in a given direction
       if(direction.equals("N")){
          exits[0] = false;
       } else if(direction.equals("E")){
@@ -129,10 +145,10 @@ public class RPG_Room {
       } else if(direction.equals("W")){
          exits[3] = false;
       } else {
-         System.out.println("ERROR: Invalid direction!");
+         printStaggered("ERROR: Invalid direction!");
       }
    }
-   public void unlockExit(String direction){ // add/unlock an exit in a given direction
+   public void unlockExit(String direction) throws InterruptedException{ // add/unlock an exit in a given direction
       if(direction.equals("N")){
          exits[0] = true;
       } else if(direction.equals("E")){
@@ -142,7 +158,7 @@ public class RPG_Room {
       } else if(direction.equals("W")){
          exits[3] = true;
       } else {
-         System.out.println("ERROR: Invalid direction!");
+         printStaggered("ERROR: Invalid direction!");
       }
    }
    
@@ -208,9 +224,9 @@ public class RPG_Room {
       cr /= RPG_Dungeon.CR_DIVISION;
       **/
       // TBA: Selection based on cr
-      int enemyID = (int)(Math.random()*RPG_Enemies_List.test.length);
-      // System.out.println("DEBUG - Enemy ID = " + enemyID);
-      RPG_Enemy enemy = new RPG_Enemy(RPG_Enemies_List.test[enemyID]); // send an existing enemy to a copy constructor so each can be treated differently
+      int enemyID = (int)(Math.random()*RPG_Enemies_List.floorOne.length);
+      // printStaggered("DEBUG - Enemy ID = " + enemyID);
+      RPG_Enemy enemy = new RPG_Enemy(RPG_Enemies_List.floorOne[enemyID]); // send an existing enemy to a copy constructor so each can be treated differently
       objects.add(enemy); // add enemy to objects array
    }
    
@@ -228,7 +244,7 @@ public class RPG_Room {
    }
    
    public void addRandomBoss(){
-      objects.add(new RPG_Enemy(RPG_Enemies_List.BOSSDUMMY));
+      objects.add(new RPG_Enemy(RPG_Enemies_List.Necromancer));
    }
    
    public void addRandomBoss(String difficultyOverride){

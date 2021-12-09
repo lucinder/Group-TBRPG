@@ -68,7 +68,7 @@ public class RPG_Enemy extends RPG_Character{
    public int getXP(){ return this.XP; }
    public double getCR(){ 
       this.xpmap = new RPG_XPMap();
-      System.out.println("DEBUG- XP = " + this.XP+", so CR = " + xpmap.map.get(this.XP));
+      // System.out.println("DEBUG- XP = " + this.XP+", so CR = " + xpmap.map.get(this.XP));
       return (xpmap.map.get(this.XP));
    }
    public int getProficiencyBonus(){

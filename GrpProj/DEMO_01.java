@@ -4,7 +4,7 @@ Demo file written for a baseline gameplay test
 **/
 import java.io.*;
 public class DEMO_01{
-   public static void main(String[] args) throws IOException{
+   public static void main(String[] args) throws IOException,InterruptedException{
       RPG_Game.start();
    }
 }

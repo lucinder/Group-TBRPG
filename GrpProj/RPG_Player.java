@@ -15,6 +15,22 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class RPG_Player extends RPG_Character{
+   public static final int TEXTDELAY = 20;
+   public static final int LINEDELAY = 0;
+   
+   public static void printStaggered(String input) throws InterruptedException{
+      printStaggered(input, TEXTDELAY);
+   }
+   public static void printStaggered(String input, int delayMS) throws InterruptedException{ // ONLY works for single-line commands
+      String[] toPrint = input.split("");
+      for(String s : toPrint){
+         System.out.print(s);
+         Thread.sleep(delayMS);
+      }
+      System.out.println();
+      Thread.sleep(LINEDELAY);
+   }
+
    public class RPG_Optional_Race_Features{
       private static boolean hasDarkvision = false;
       private static String breathWeaponType = "None"; // breath weapon type for dragonborn - default none (no breath weapon)
@@ -41,7 +57,7 @@ public class RPG_Player extends RPG_Character{
    public RPG_Player(){ // no-arg constructor- DO NOT USE
       super();
    }
-   public RPG_Player(String name, RPG_Race pcRace, RPG_Class pcClass) throws IOException{
+   public RPG_Player(String name, RPG_Race pcRace, RPG_Class pcClass) throws IOException,InterruptedException{
    // 3-arg constructor- use this for randomly generating level 1 characters!
       super(name);
       this.pcRace = pcRace;
@@ -275,7 +291,7 @@ public class RPG_Player extends RPG_Character{
    public int getTotalXP(){ return totalXP; }
    public void gainXP(int toAdd){ // gain experience
       this.totalXP += toAdd;
-      if(level < 20 && totalXP > XPtoLevelUp[level]){ levelUp(); } // levelup if the leveling roster is met
+      if(level < 20 && totalXP >= XPtoLevelUp[level]){ levelUp(); } // levelup if the leveling roster is met
    }
    public void levelUp(){
       System.out.println("LEVEL UP!");

@@ -8,6 +8,21 @@ import java.util.ArrayList;
 public class RPG_Character extends RPG_Interactable{
    public static final RPG_Action DONOTHING = new RPG_Action();
    public static final RPG_Attack UNARMED_STRIKE = new RPG_Attack();
+   public static final int TEXTDELAY = 20;
+   public static final int LINEDELAY = 0;
+   
+   public static void printStaggered(String input) throws InterruptedException{
+      printStaggered(input, TEXTDELAY);
+   }
+   public static void printStaggered(String input, int delayMS) throws InterruptedException{ // ONLY works for single-line commands
+      String[] toPrint = input.split("");
+      for(String s : toPrint){
+         System.out.print(s);
+         Thread.sleep(delayMS);
+      }
+      System.out.println();
+      Thread.sleep(LINEDELAY);
+   }
    
    private String name;
    int[] stats = RPG_Dice.randchar(); // {STR, DEX, CON, INT, WIS, CHA}
@@ -45,7 +60,7 @@ public class RPG_Character extends RPG_Interactable{
       this.stats = stats;
       this.AC = AC;
    }
-   public RPG_Character(String name, int hpMax, int[] stats, int AC, RPG_Item[] inventory){
+   public RPG_Character(String name, int hpMax, int[] stats, int AC, RPG_Item[] inventory) throws InterruptedException{
       this.name = name;
       this.hpMax = hpMax;
       this.hpCur = hpMax;
@@ -66,7 +81,7 @@ public class RPG_Character extends RPG_Interactable{
          this.actions.add(a);
       }
    }
-   public RPG_Character(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory){
+   public RPG_Character(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory) throws InterruptedException{
       this.name = name;
       this.hpMax = hpMax;
       this.hpCur = hpMax;
@@ -188,11 +203,11 @@ public class RPG_Character extends RPG_Interactable{
    // Inv management
    public int getGP(){ return GP; } // how much gold do we have?
    public void setGP(int newGP){ this.GP = newGP; }
-   public void gainGP(int toAdd){ // gain gold
-      System.out.println("Gained " + toAdd + " GP!");
+   public void gainGP(int toAdd) throws InterruptedException{ // gain gold
+      printStaggered("Gained " + toAdd + " GP!");
       this.GP += toAdd;
    }
-   public void addItem(RPG_Item item){
+   public void addItem(RPG_Item item) throws InterruptedException{
       if(inventory.indexOf(item) != -1){
          inventory.get(inventory.indexOf(item)).incrementQuantity(); // if we have a duplicate, just increment its quantity
       } else {
@@ -270,10 +285,10 @@ public class RPG_Character extends RPG_Interactable{
       return RPG_Dice.getModifier(stats[5]);
    }
    
-   public void printInventory(){ // prints out all items in inventory
-      System.out.println("INVENTORY:");
+   public void printInventory() throws InterruptedException{ // prints out all items in inventory
+      printStaggered("INVENTORY:");
       for(RPG_Item i : inventory){
-         System.out.println(i.getName() + " x" + i.getQuantity());
+         printStaggered(i.getName() + " x" + i.getQuantity());
       }
    }
    
@@ -318,9 +333,9 @@ public class RPG_Character extends RPG_Interactable{
       addAction(newAction);
       return temp;
    }
-   public void printActions(){
+   public void printActions() throws InterruptedException{
       for(RPG_Action a : actions){
-         System.out.println("[" + a.getName().toUpperCase() + "]");
+         printStaggered("[" + a.getName().toUpperCase() + "]");
       }
    }
    
