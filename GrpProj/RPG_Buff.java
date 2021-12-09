@@ -1,3 +1,4 @@
+import java.util.Arrays;
 public class RPG_Buff extends RPG_Attack{
    private int[] dice = {0,0}; // Buffs/nerfs use no dice by default
    private int[] statModifiers = {0,0,0,0,0,0}; // no stat modifiers by default
@@ -35,7 +36,7 @@ public class RPG_Buff extends RPG_Attack{
    public boolean equals(Object otherItem){
       if(otherItem instanceof RPG_Buff){
          RPG_Buff other = (RPG_Buff)otherItem;
-         return name.equals(other.getName()) && super.getType().equals(other.getType()) && Arrays.equals(statModifiers, other.getStatModifiers()) && Arrays.equals(typesGained, other.getTypes());
+         return getName().equals(other.getName()) && super.getType().equals(other.getType()) && Arrays.equals(statModifiers, other.getStatModifiers()) && Arrays.equals(typesGained, other.getTypes());
       }
       return false;
    }
