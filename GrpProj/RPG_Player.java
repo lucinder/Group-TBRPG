@@ -287,6 +287,15 @@ public class RPG_Player extends RPG_Character{
    }
    public void useBreath(){
       RPG_Optional_Race_Features.breathWeaponUsed = true;
+      removeAction("Dragon Breath");
+   }
+   public void rechargeBreath(){
+      RPG_Optional_Race_Features.breathWeaponUsed = false;
+      if(RPG_Optional_Race_Features.breathWeaponSaveDex){
+         addAction(new RPG_SaveAttack("Dragon Breath",RPG_Optional_Race_Features.breathWeaponType,RPG_Optional_Race_Features.breathWeaponDice,(8+getProficiencyBonus()+conModifier()),1));
+      } else {
+         addAction(new RPG_SaveAttack("Dragon Breath",RPG_Optional_Race_Features.breathWeaponType,RPG_Optional_Race_Features.breathWeaponDice,(8+getProficiencyBonus()+conModifier()),2));
+      }
    }
    
    // XP AND LEVELING
@@ -351,7 +360,9 @@ public class RPG_Player extends RPG_Character{
       // recharge lucky
       RPG_Optional_Race_Features.luckyUsed = false;
       // recharge breath weapon
-      RPG_Optional_Race_Features.breathWeaponUsed = false;
+      if(!RPG_Optional_Race_Features.breathWeaponType.equals("None") && RPG_Optional_Race_Features.breathWeaponUsed){
+         rechargeBreath();
+      }
    }
    
    // prof bonus

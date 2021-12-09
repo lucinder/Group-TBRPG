@@ -34,6 +34,7 @@ public class RPG_Armor extends RPG_Item{
       if(statMod > modifierCap){
          statMod = modifierCap; // max bonus = modifier cap
       }
+      if(statMod < 0){ statMod = 0; } // no negative armor mods here!
       return baseArmor + magicBonus + statMod;
    }
    public int getMagicBonus(){ return magicBonus; }

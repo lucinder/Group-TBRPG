@@ -235,6 +235,7 @@ public class RPG_Character extends RPG_Interactable{
          }
       }
    }
+   
    public boolean inventoryContains(String itemName){
       for(RPG_Item i : inventory){
          if(i.getName().equals(itemName)){ return true; }

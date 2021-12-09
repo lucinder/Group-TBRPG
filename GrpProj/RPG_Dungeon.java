@@ -8,7 +8,7 @@ import java.util.Scanner;
 import java.io.*;
 public class RPG_Dungeon{
    private static final String TITLE = "ESCAPE FROM DEEPROCK VAULT";
-   private static final String CREDITS = "Programmers - - - Savanna Wheeler, Abdalrahman Shaath\nLead Scriptwriter - - - Pilsung Kwok\n Combat System + Enemy Statblocks - - - Justin Seo";
+   private static final String CREDITS = "Backend Programming - - - Savanna Wheeler\nFrontend Programming - - - Justin Seo\nLead Scriptwriter - - - Pilsung Kwok\nGame Testing - - - Abdalrahman Shaath";
    public static final int TEXTDELAY = 20;
    public static final int LINEDELAY = 100;
    // private static RPG_Room[][] DUNGEON_ARRAY;
@@ -18,7 +18,7 @@ public class RPG_Dungeon{
    public static final int CR_DIVISION = 5; // how many rooms should an interval of 1 CR be (for enemy generation)?
    private RPG_Player player;
    
-   public RPG_Dungeon(RPG_Room head, RPG_Player p) throws IOException,InterruptedException{
+   public RPG_Dungeon(RPG_Room head, RPG_Player p) throws IOException,InterruptedException,Exception{
       player = p;
       DUNGEON_ROOM_HEAD = head;
       DUNGEON_ROOM_CURRENT = head;
@@ -108,7 +108,7 @@ public class RPG_Dungeon{
    
    
    
-   public void mainLoop() throws IOException,InterruptedException{
+   public void mainLoop() throws IOException,InterruptedException,Exception{
       if(DUNGEON_ROOM_CURRENT.getIfFinalRoom()){ // have we finished the dungeon?
          ending();
          System.exit(0);
@@ -187,7 +187,7 @@ public class RPG_Dungeon{
       return false;
    }
    
-   public void loadRoomContents() throws IOException,InterruptedException{
+   public void loadRoomContents() throws IOException,InterruptedException,Exception{
       for(RPG_Interactable i : DUNGEON_ROOM_CURRENT.getObjects()){
          i.interactionEvent();
          if(i instanceof RPG_Trap){
@@ -195,10 +195,18 @@ public class RPG_Dungeon{
             trap.trigger(player); // triggers a trap attack. the trigger method itself handles disabled traps.
          }
          if(i instanceof RPG_Enemy){ // enemy detected?
+            // testing out the new combat system
             RPG_Enemy en = (RPG_Enemy)i;
+            if(!(en.isPacified()) && en.getHP() > 0){
+               RPG_Combat battle = new RPG_Combat(player);
+               battle.add(en);
+               battle.start();
+            }
+            /**
             if(!en.isPacified() && en.getHP() > 0){ // engage battle if enemy is alive and angry
                combat(player, en);
             }
+            **/
          }
       }
    }
@@ -259,7 +267,7 @@ public class RPG_Dungeon{
    
    
    // move to an adjacent, open square
-   public void move(String dir) throws IOException,InterruptedException{
+   public void move(String dir) throws IOException,InterruptedException,Exception{
       if(dir.equals("N")){
          printStaggered(player.getName() + " proceeded to the north.");
          if(DUNGEON_ROOM_CURRENT.hasUp()){
@@ -317,7 +325,7 @@ public class RPG_Dungeon{
       }
    }
    
-   
+   /** OLD COMBAT SYSTEM
   public void combat(RPG_Player player, RPG_Enemy enemy) throws IOException,InterruptedException{
       preCombatStats = player.getStats().clone(); // pass by value
       int playerInit = player.initiative(); // roll initiative for the player
@@ -404,6 +412,7 @@ public class RPG_Dungeon{
          player.gainXP(toGain);
       }
    }
+   **/
    
    public void ending() throws InterruptedException{ // GAME ENDING
       printStaggered("As your final foe yields before you, you feel a cool breeze wash over your body.");

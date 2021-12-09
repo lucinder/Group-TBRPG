@@ -1,6 +1,6 @@
 public class RPG_DungeonBuilder{
    private RPG_Room head;
-   public RPG_DungeonBuilder(int levels, int levelLength){
+   public RPG_DungeonBuilder(int levels, int levelLength) throws InterruptedException{
       /**
       if levelLength = 1, each level is an empty room
       if levelLength = 2, each level is a starting (empty) room followed by a boss room
@@ -69,7 +69,7 @@ public class RPG_DungeonBuilder{
    }
    
    // DEBUG MODE CONSTRUCTOR
-   public RPG_DungeonBuilder(int levels, int levelLength, String difficultyOverride){
+   public RPG_DungeonBuilder(int levels, int levelLength, String difficultyOverride) throws InterruptedException{
       head = new RPG_Room("0_Empty");
       RPG_Room cur = head;
       for(int i = 1; i <= levels; i++){ // populate all dungeon levels

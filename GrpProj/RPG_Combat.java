@@ -1,6 +1,7 @@
 /**
 @author Justin Seo
 @file RPG_Combat.java
+Integration edits by lucinder
 **/
 import java.util.*;
 public class RPG_Combat{
@@ -184,7 +185,7 @@ public class RPG_Combat{
 
     //True if combat is over
     public boolean isCombatOver() {
-        return victory;
+        return victory || fled;
     }
 
     //Checks battles conditions to see if combat should end or not
@@ -224,13 +225,13 @@ public class RPG_Combat{
          throw new Exception("No valid action in input");
         }
       action.act(actor, target);
+      if(action.getName().equals("Dragon Breath")){ actor.useBreath(); } // expend breath weapons
     }
     // Player attack method (target selection)
     public void attack(RPG_Player actor, RPG_Attack action) throws Exception{
       if(numEntities > 2){ // multiple viable targets (horde combat)
          RPG_Character target;
          boolean targetSelected = false;
-         Scanner input = new Scanner(System.in);
          while(!targetSelected){
             printStaggered("Select a target!");
             int i = 0;
@@ -239,19 +240,21 @@ public class RPG_Combat{
             while(!(cur == null)){
                if(!(cur.getEntity() instanceof RPG_Player)){ // find and list all targets
                   targets[i] = cur.getEntity();
-                  printStaggered("["+i+"] " + targets[i].getName());
+                  printStaggered(" ["+i+"] " + targets[i].getName());
                   i++;
                }
-               printStaggered(" [" + i + "] BACK");
-               String select = input.nextLine();
-               if(select.toUpperCase().equals("Q")){ System.exit(0); } // Quit game
-               if(select.equals(""+i)){ attack(actor); break; } // Go back to action selection
-               try {
-                  attack(player, targets[Integer.parseInt(select)], action); // attempt target selection using input
-                  targetSelected = true;
-               } catch (Exception e){
-                  printStaggered("Invalid selection!"); // bad input or target not found
-               }
+               cur = cur.getNext();
+            }
+            printStaggered(" [" + i + "] BACK");
+            String select = input.nextLine();
+            if(select.toUpperCase().equals("Q")){ System.exit(0); } // Quit game
+            if(select.equals(""+i)){ attack(actor); break; } // Go back to action selection
+            try {
+               attack(player, targets[Integer.parseInt(select)], action); // attempt target selection using input
+               targetSelected = true;
+            } catch (Exception e){
+               printStaggered("Invalid selection!"); // bad input or target not found
+               targetSelected = false;
             }
          }
         } else {
@@ -265,6 +268,7 @@ public class RPG_Combat{
    }
    public void spare(RPG_Player actor, RPG_Enemy target){
       target.pacify();
+      return; // maybe?
    }
    // Player spare method (target selection)
     public void spare(RPG_Player actor) throws Exception{
@@ -282,13 +286,14 @@ public class RPG_Combat{
             while(!(cur == null)){
                if(cur.getEntity() instanceof RPG_Enemy && ((RPG_Enemy)cur.getEntity()).canSpare){ // find and list all targets
                   targets.add((RPG_Enemy)cur.getEntity());
-                  printStaggered("["+i+"] " + targets.get(i).getName());
-                  cur = cur.getNext();
+                  printStaggered(" ["+i+"] " + targets.get(i).getName());
                   i++;
                }
+               cur = cur.getNext();
             }
             printStaggered(" [" + i + "] BACK");
             String select = input.nextLine();
+            
             if(select.toUpperCase().equals("Q")){ System.exit(0); } // Quit game
             if(select.equals(""+i)){ attack(actor); break; } // Go back to action selection
             try {
@@ -306,7 +311,7 @@ public class RPG_Combat{
       boolean validAction = false;
       int selection = -1;
       printStaggered("It's your turn!");
-      
+      printStaggered("[" + player.getName()+ ": HP " + player.getHP() + "/" + player.getMaxHP() + "]");
       while(!validAction) {
         printStaggered("What will you do?");
         printStaggered(" [0] ATTACK\n [1] ITEM\n [2] FLEE");
@@ -405,7 +410,7 @@ public class RPG_Combat{
             }
          }
          if(itemSelected){ // early breaks from going back skip this action
-            attack(actor, itemAction); // pass our selection on to target selection
+            attack(actor, actor, itemAction); // pass our selection on directly to action usage; target is automatically self
          }
       } else if(selection == 2) { //Flee
          //Conditions that make running impossible
@@ -448,24 +453,27 @@ public class RPG_Combat{
          } else {
             attack((RPG_Enemy)cur.getEntity());
          }
-         //Checks if current entity meets conditions
+         //Checks if current entity meets removal conditions
          //If so, removes them from combat, then checks the
          //next entity
          for(CombatNode c = initiative; c != null; c = c.getNext()){
             // Conditions: 
             if(c.getEntity().getHP() <= 0){ // 1. At 0 hp or less
                if(c.getEntity() instanceof RPG_Player){ // player death
-                  printStaggered("You died!");
-                  printStaggered("GAME OVER");
-                  System.exit(0);
+                  player.die();
+               } else {
+                  ((RPG_Enemy)c.getEntity()).die();
+                  xpSum += ((RPG_Enemy)c.getEntity()).getXP();
+                  remove(c.getEntity().getName());
+                  player.sin(); // murder: player is no longer a pacifist
                }
-               xpSum += ((RPG_Enemy)c.getEntity()).getXP();
-               remove(c.getEntity().getName());
-               player.sin(); // murder: player is no longer a pacifist
             } else if (c.getEntity() instanceof RPG_Enemy && ((RPG_Enemy)c.getEntity()).isPacified()){ // 2. Enemy has been pacified. 
                xpSum += ((RPG_Enemy)c.getEntity()).getXP();
                remove(c.getEntity().getName());
             }
+         }
+         if(numEntities == 1){ // player is the last one standing
+            victory = true;
          }
          cur = cur.getNext();
          if(cur == null){ cur = initiative; } // reset if we tick over
@@ -478,6 +486,8 @@ public class RPG_Combat{
             player.gainXP(xpSum);
         }
     }
+    
+    // HELPER METHODS
     private boolean contains(String[] array, String key){ // helper to check if a string array contains a given string- not case sensitive
       for(String s : array){
          if(s.toLowerCase().equals(key.toLowerCase())){ return true; }
