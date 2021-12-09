@@ -93,6 +93,7 @@ public class RPG_Character extends RPG_Interactable{
          hpCur = hpMax;
       }
    }
+   public void setHP(int newHP) { setCurrentHP(newHP); }
    public void setMaxHP(int newHP){
       hpMax = newHP;
    }

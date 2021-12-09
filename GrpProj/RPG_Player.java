@@ -33,6 +33,7 @@ public class RPG_Player extends RPG_Character{
    private boolean pacifist = true; // has the character spared all enemies so far?
    private boolean hidden = false; // for rogues- is the character currently hidden?
    private int level = 1;
+   private int[] XPtoLevelUp = new int[]{0,300,900,2700,6500,14000,23000,34000,48000,64000,85000,100000,120000,140000,165000,195000,225000,265000,305000,355000};
    private int totalXP = 0;
    private RPG_Race pcRace = new RPG_Race();
    private RPG_Class pcClass = new RPG_Class();
@@ -89,11 +90,21 @@ public class RPG_Player extends RPG_Character{
       loadArmorClass();
    }
    
-   // Post-combat methods
+   // XP AND LEVELING
    public int getTotalXP(){ return totalXP; }
    public void gainXP(int toAdd){ // gain experience
       this.totalXP += toAdd;
-      // Levelup detection
+      if(level < 20 && totalXP > XPtoLevelUp[level]){ levelUp(); } // levelup if the leveling roster is met
+   }
+   public void levelUp(){
+      System.out.println("LEVEL UP!");
+      level++;
+      int mod = super.conModifier(); if(mod < 0){ mod = 0; } // hp gain mod
+      int hpToAdd = mod + RPG_Dice.XdY(1,pcClass.getHitDie()); // roll HP gain
+      setMaxHP(getMaxHP() + hpToAdd);
+      setHP(getHP() + hpToAdd);
+      System.out.println("Max HP increased by " + hpToAdd + ".");
+      // ASI handler to be added
    }
    
    private void loadArmorClass(){  // load unarmored defense for monk/barbarian classes or armor for classes that start with it
@@ -288,6 +299,7 @@ public class RPG_Player extends RPG_Character{
       hidden = false;
    }
    
+   // epic die moment
    public void die(){
       System.out.println("You died!");
       System.out.println("GAME OVER");

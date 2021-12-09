@@ -8,7 +8,7 @@ public class RPG_Enemies_List{
          new RPG_Action(RPG_Character.DONOTHING)
       },
       new RPG_Item[]{},
-      10
+      200
    );
    static RPG_Enemy ANGRYDUMMY = new RPG_Enemy(
       "Mad Dummy",
@@ -20,7 +20,7 @@ public class RPG_Enemies_List{
          new RPG_Attack(RPG_Character.UNARMED_STRIKE)
       },
       new RPG_Item[]{},
-      25
+      200
    );
    static RPG_Enemy BOSSDUMMYEASY = new RPG_Enemy(
       "Boss Dummy",

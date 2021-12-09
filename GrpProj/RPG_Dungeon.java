@@ -34,6 +34,8 @@ public class RPG_Dungeon{
       if(action.equals("Q")){ System.exit(0); } // QUIT option
       if(contains(action,"inventory")){ // check inventory
          player.printInventory();
+      } else if (contains(action,"stats")) {
+         System.out.println(player);
       } else if(contains(action,"treasure") || contains(action,"open") || contains(action,"chest")){
          boolean openSuccessful = false;
          for(RPG_Interactable i : DUNGEON_ROOM_CURRENT.getObjects()){
@@ -274,7 +276,7 @@ public class RPG_Dungeon{
                   if((spareRange && selection > actions.size()) || (!spareRange && selection >= actions.size())){ // overflow handler
                      throw new Exception();
                   }
-               } catch(Exception e){ // should catch all non-int input
+               } catch(Exception e){ // should catch all non-int input except quit
                   System.out.println("Invalid selection!");
                   actionSelected = false; // deselect
                   continue; // keep looping until a valid selection is made 
