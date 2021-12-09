@@ -65,6 +65,7 @@ public class RPG_Attack extends RPG_Action{
    public int[] getDice(){ return dice; }
    public int getToHit(){ return toHit; }
    public void setToHit(int newProf){ toHit = newProf; }
+   public void setModifier(int mod){ this.modifier = mod;}
    public int rollToHit(){
       int roll = RPG_Dice.XdY(1,20) + modifier + toHit;
       // System.out.print("Roll to hit: " + roll + " "); // testing purposes only
