@@ -19,6 +19,7 @@ public class RPG_Spell extends RPG_Attack{
       this.castStat = castingStat;
    }
    // getters + setters
+   public int getCastingStat(){ return castStat; }
    public int getManaCost(){ return manaCost; }
    public boolean canAfford(int currentMana){ return manaCost <= currentMana; }
 }

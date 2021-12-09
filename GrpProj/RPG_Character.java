@@ -35,6 +35,7 @@ public class RPG_Character extends RPG_Interactable{
    private int proficiencyBonus = 2;
    private ArrayList<RPG_Item> inventory = new ArrayList<RPG_Item>();
    private ArrayList<RPG_Action> actions = new ArrayList<RPG_Action>();
+   private ArrayList<RPG_Action> itemActions = new ArrayList<RPG_Action>(); // handles using inventory stuff
    private ArrayList<String> damageResistances = new ArrayList<String>(); // damage type resistances - default none
    private ArrayList<String> damageWeaknesses = new ArrayList<String>();
    private ArrayList<String> conditionImmunities = new ArrayList<String>(); // condition immunities
@@ -96,6 +97,7 @@ public class RPG_Character extends RPG_Interactable{
    }
    // getters setters
    public String getName(){ return name; }
+   public void setName(String newName){ name = newName; }
    public int getMaxHP(){ return hpMax; }
    public int getHP(){ return getCurrentHP(); } // pseudooverload for simplicity
    public int getCurrentHP(){ return hpCur; }
@@ -154,6 +156,7 @@ public class RPG_Character extends RPG_Interactable{
    }
    public ArrayList<RPG_Item> getInventory(){ return inventory; }
    public ArrayList<RPG_Action> getActions(){ return actions; }
+   public ArrayList<RPG_Action> getItemActions(){ return itemActions; }
    public RPG_Item[] getInventoryArray(){ // converts inventory list to an array and returns array
       RPG_Item[] output = new RPG_Item[inventory.size()];
       int i = 0;
@@ -216,7 +219,7 @@ public class RPG_Character extends RPG_Interactable{
             return;
          }
          inventory.add(item);
-         if(item instanceof RPG_Weapon){ // reload inv whenever we gain a weapon
+         if(item instanceof RPG_Weapon || item instanceof RPG_Armor){ // reload inv whenever we gain a weapon, armor, or shield
             loadInventory();
          }
       }
@@ -241,24 +244,41 @@ public class RPG_Character extends RPG_Interactable{
    public void loadInventory(){ // load all weapons, potions as actions
       // CLEAR ACTIONS
       actions = new ArrayList<RPG_Action>();
+      itemActions = new ArrayList<RPG_Action>();
       for(RPG_Item i : inventory){
          if(i instanceof RPG_Weapon){
+            RPG_Attack weaponattack;
             RPG_Weapon weapon = (RPG_Weapon)i;
-            int mod = 0;
-            if(weapon.isRanged() || (weapon.isFinesse() && stats[1] > stats[0])){
-               mod += dexModifier(); // use dex mod
+            if(!(i instanceof RPG_Potion || i instanceof RPG_SpellScroll)){
+               int mod = 0;
+               if(weapon.isRanged() || (weapon.isFinesse() && stats[1] > stats[0])){
+                  mod += dexModifier(); // use dex mod
+               } else {
+                  mod += strModifier(); // use str mod
+               }
+               weaponattack = new RPG_Attack(weapon, mod, getProficiencyBonus());
+               if(hasAction(weaponattack.getName())){
+                  replaceAction(weaponattack.getName(),weaponattack);
+               } else {
+                  addAction(weaponattack);
+               }
             } else {
-               mod += strModifier(); // use str mod
-            }
-            RPG_Attack weaponattack = new RPG_Attack(weapon, mod, getProficiencyBonus());
-            if(weapon instanceof RPG_Potion && weapon.getDamageType().equals("Buff")){ // detect stat-modifying potions
-               RPG_Potion pot = (RPG_Potion)weapon;
-               weaponattack = new RPG_Buff(pot);
-            }
-            if(hasAction(weaponattack.getName())){
-               replaceAction(weaponattack.getName(),weaponattack);
-            } else {
-               addAction(weaponattack);
+               if(weapon instanceof RPG_Potion){ // detect potions
+                  RPG_Potion pot = (RPG_Potion)weapon;
+                  if(weapon.getDamageType().equals("Buff")){ // detect stat-modifying potions
+                     weaponattack = new RPG_Buff(pot);
+                  } else {
+                     weaponattack = new RPG_Attack(pot, 0, 0);
+                  }
+               } else { // spell scroll
+                  RPG_SpellScroll scroll = (RPG_SpellScroll)weapon;
+                  weaponattack = new RPG_Attack(scroll, RPG_Dice.getModifier(stats[scroll.getSpell().getCastingStat()]), getProficiencyBonus());
+               }
+               if(hasAction(weaponattack.getName())){
+                  replaceItemAction(weaponattack.getName(),weaponattack);
+               } else {
+                  addItemAction(weaponattack);
+               }
             }
          }
       }
@@ -331,6 +351,26 @@ public class RPG_Character extends RPG_Interactable{
    public RPG_Action replaceAction(String oldActionName, RPG_Action newAction){ // returns the replaced action!
       RPG_Action temp = removeAction(oldActionName);
       addAction(newAction);
+      return temp;
+   }
+   public void addItemAction(RPG_Action newAction){
+      itemActions.add(newAction);
+   }
+   public RPG_Action removeItemAction(String toRemove){
+      int foundIndex = -1;
+      int i = 0;
+      for(RPG_Action a : itemActions){
+         if(a.getName().equals(toRemove)){
+            foundIndex = i; // for duplicate cases, the last instance will be set to the removal instance
+         }
+         i++;
+      }
+      if(foundIndex == -1){ return null; } // if no action to remove is found, quit early
+      return itemActions.remove(foundIndex);
+   }
+   public RPG_Action replaceItemAction(String oldActionName, RPG_Action newAction){ // returns the replaced action!
+      RPG_Action temp = removeItemAction(oldActionName);
+      addItemAction(newAction);
       return temp;
    }
    public void printActions() throws InterruptedException{

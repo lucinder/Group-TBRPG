@@ -106,6 +106,8 @@ public class RPG_Player extends RPG_Character{
       loadArmorClass();
    }
    
+   public RPG_Class getPlayerClass(){ return pcClass; }
+   
    private void loadArmorClass(){  // load unarmored defense for monk/barbarian classes or armor for classes that start with it
       int unarmoredDefense = 10 + RPG_Dice.getModifier(super.getStats()[1]);
       int shieldBonus = 0;

@@ -6,13 +6,15 @@ Handles deciding a proficiency bonus based on CR
 The xp map is really finicky sometimes. Yell at it until it works, I say.
 **/
 import java.util.ArrayList;
+// import java.lang.*;
 public class RPG_Enemy extends RPG_Character{
    private RPG_XPMap xpmap = new RPG_XPMap();
    private int XP = 10; // enemy XP: default 10
    private boolean isBoss = false;
    private boolean pacified = false;
-   public RPG_Enemy(){super(); defaultSettings();}
-   public RPG_Enemy(RPG_Enemy toCopy){ // copy constructor
+   public boolean canSpare = false;
+   public RPG_Enemy() {super(); defaultSettings();}
+   public RPG_Enemy(RPG_Enemy toCopy) throws InterruptedException{ // copy constructor
       super(toCopy.getName(), toCopy.getMaxHP(), toCopy.getStats(), toCopy.getAC(), toCopy.getActionsArray(), toCopy.getInventoryArray());
       // defaultSettings();
       this.XP = toCopy.getXP();
@@ -23,28 +25,28 @@ public class RPG_Enemy extends RPG_Character{
          setDialogue("The mighty " + toCopy.getName() + " blocks the path!");
       }
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, int XP){
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, int XP) throws InterruptedException{
       super(name, hpMax, stats, AC, actions);
       // defaultSettings();
       this.XP = XP;
       setProficiencyBonus(this.getProficiencyBonus());
       setDialogue("A wild " + name + " appeared!");
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Item[] inventory, int XP){
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Item[] inventory, int XP) throws InterruptedException{
       super(name, hpMax, stats, AC, inventory);
       // defaultSettings();
       this.XP = XP;
       setProficiencyBonus(this.getProficiencyBonus());
       setDialogue("A wild " + name + " appeared!");
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, int XP){
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, int XP) throws InterruptedException{
       super(name, hpMax, stats, AC, actions, inventory);
       // defaultSettings();
       this.XP = XP;
       setProficiencyBonus(this.getProficiencyBonus());
       setDialogue("A wild " + name + " appeared!");
    }
-   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, int XP, boolean isBoss){
+   public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, int XP, boolean isBoss) throws InterruptedException{
       super(name, hpMax, stats, AC, actions, inventory);
       // defaultSettings();
       this.XP = XP;
@@ -81,6 +83,7 @@ public class RPG_Enemy extends RPG_Character{
       return 0;
    }
    public void doAction(RPG_Character target){ // choose a random action to perform, then perform it
+      if(super.getActions() == null || super.getActions().size() == 0){ return; } // if there's nothing to do, do nothing.
       RPG_Action action = super.getActions().get((int)(Math.random()*(super.getActions().size())));
       action.act(this, target);
    }
