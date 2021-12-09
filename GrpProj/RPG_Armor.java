@@ -11,17 +11,17 @@ public class RPG_Armor extends RPG_Item{
    public RPG_Armor(){
       super();
    }
-   public RPG_Armor(String name, int quantity, int value, int baseArmor){
-      super(name, quantity, value);
+   public RPG_Armor(String name, int quantity, int value, int baseArmor, String description){
+      super(name, quantity, value, description);
       this.baseArmor = baseArmor;
    }
-   public RPG_Armor(String name, int quantity, int value, int baseArmor, int modifierCap){
-      super(name, quantity, value);
+   public RPG_Armor(String name, int quantity, int value, int baseArmor, int modifierCap, String description){
+      super(name, quantity, value, description);
       this.baseArmor = baseArmor;
       this.modifierCap = modifierCap;
    }
-   public RPG_Armor(String name, int quantity, int value, int baseArmor, int modifierCap, int magicBonus){
-      super(name, quantity, value);
+   public RPG_Armor(String name, int quantity, int value, int baseArmor, int modifierCap, int magicBonus, String description){
+      super(name, quantity, value, description);
       this.baseArmor = baseArmor;
       this.modifierCap = modifierCap;
       this.magicBonus = magicBonus;

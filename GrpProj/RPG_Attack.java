@@ -48,6 +48,9 @@ public class RPG_Attack extends RPG_Action{
    }
    public RPG_Attack(RPG_Weapon weapon, int modifier, int proficiency){
       super(weapon.getName() + " Attack"," swung their " + weapon.getName() + ".");
+      if(weapon instanceof RPG_Potion){
+         setName(weapon.getName()); // remove "Attack"
+      }
       // System.out.println("TEST- weapon name = " + weapon.getName());
       if(weapon.isRanged()){
          setDesc(" shot with their " + weapon.getName() + ".");
@@ -99,6 +102,12 @@ public class RPG_Attack extends RPG_Action{
       return false;
    }
    public void act(RPG_Character user, RPG_Character target){
+      if(type.equals("Healing")){
+         int healing = rollDamage();
+         say(user.getName(), target.getName(), healing, true, false, false);
+         target.heal(healing);
+         return; // cut off method early
+      }
       int hitRoll = rollToHit();
       if(hitRoll > target.getAC()){
          int damage = rollDamage();
@@ -143,7 +152,9 @@ public class RPG_Attack extends RPG_Action{
 
    public void say(String user, String target, int dmgValue, boolean isHit, boolean isCrit, boolean isTrap){
       if (type.equals("Healing")){
-         System.out.print(user + " heals the " + target + "! ");
+         if(!user.equals(target)){
+            System.out.print(user + " heals the " + target + "! ");
+         }
          System.out.println(target + " regained " + dmgValue + " HP!");
       } else {
          if(!isTrap){

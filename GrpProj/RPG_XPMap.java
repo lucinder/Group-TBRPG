@@ -3,6 +3,7 @@ public class RPG_XPMap{
    public HashMap<Integer, Double> map = new HashMap();
    public RPG_XPMap(){ fillXPMap(); }
    public void fillXPMap(){ // fill xp table with up to CR 20
+      map.put(0, 0.0);
       map.put(10, 0.0);
       map.put(25, 0.125);
       map.put(50, 0.25);

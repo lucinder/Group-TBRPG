@@ -16,6 +16,8 @@ public class RPG_Character extends RPG_Interactable{
    private int mpMax = 0;
    private int mpCur = 0;
    private int AC = 10;
+   private int GP = 0;
+   private int proficiencyBonus = 2;
    private ArrayList<RPG_Item> inventory = new ArrayList<RPG_Item>();
    private ArrayList<RPG_Action> actions = new ArrayList<RPG_Action>();
    private ArrayList<String> damageResistances = new ArrayList<String>(); // damage type resistances - default none
@@ -176,11 +178,36 @@ public class RPG_Character extends RPG_Interactable{
    }
    public void fullHeal(){ hpCur = hpMax; }
    
+   // Inv management
+   public int getGP(){ return GP; } // how much gold do we have?
+   public void setGP(int newGP){ this.GP = newGP; }
+   public void gainGP(int toAdd){ // gain gold
+      System.out.println("Gained " + toAdd + " GP!");
+      this.GP += toAdd;
+   }
    public void addItem(RPG_Item item){
       if(inventory.indexOf(item) != -1){
-         inventory.get(inventory.indexOf(item)).incrementQuantity();
+         inventory.get(inventory.indexOf(item)).incrementQuantity(); // if we have a duplicate, just increment its quantity
       } else {
+         if(item.getName().equals("Gold")){ // cut method short for gold-pile gaining
+            gainGP(item.getValue());
+            return;
+         }
          inventory.add(item);
+         if(item instanceof RPG_Weapon){ // reload inv whenever we gain a weapon
+            loadInventory();
+         }
+      }
+   }
+   
+   public void useItem(String itemName){
+      if(!inventoryContains(itemName)){ return; } // stop short if item does not exist
+      for(RPG_Item i : inventory){
+         if(i.getName().equals(itemName)){
+            inventory.remove(i); // remove the first instance of the item
+            loadInventory();
+            return; // cut loop short
+         }
       }
    }
    public boolean inventoryContains(String itemName){
@@ -190,6 +217,8 @@ public class RPG_Character extends RPG_Interactable{
       return false;
    }
    public void loadInventory(){ // load all weapons, potions as actions
+      // CLEAR ACTIONS
+      actions = new ArrayList<RPG_Action>();
       for(RPG_Item i : inventory){
          if(i instanceof RPG_Weapon){
             RPG_Weapon weapon = (RPG_Weapon)i;
@@ -207,6 +236,7 @@ public class RPG_Character extends RPG_Interactable{
             }
          }
       }
+      loadArmorClass(); // always reload AC after loading inv
    }
    
    // getters for stat modifiers
@@ -236,6 +266,27 @@ public class RPG_Character extends RPG_Interactable{
       }
    }
    
+   private void loadArmorClass(){  
+      int unarmoredDefense = 10 + RPG_Dice.getModifier(stats[1]);
+      int shieldBonus = 0;
+      for(RPG_Item i : getInventory()){ // load armor for items
+         if(i instanceof RPG_Armor){
+            int newAC = ((RPG_Armor)i).getAC(dexModifier());
+            if(newAC > getAC()){
+               setAC(newAC);
+            }
+         }
+         if(i instanceof RPG_Shield){
+            int shielding = ((RPG_Shield)i).getACBonus();
+            if(shielding > shieldBonus){
+               shieldBonus = shielding;
+            }
+         }
+      }
+      setAC(getAC() + shieldBonus); // apply shield bonus
+   }
+
+   
    public void addAction(RPG_Action newAction){
       actions.add(newAction);
    }
@@ -263,7 +314,10 @@ public class RPG_Character extends RPG_Interactable{
    }
    
    public int getProficiencyBonus(){ // Default character prof bonus is 2; modified to be based on CR or level based on subclass
-      return 2;
+      return proficiencyBonus;
+   }
+   public void setProficiencyBonus(int newBonus){
+      this.proficiencyBonus = newBonus;
    }
    
    // rolls

@@ -51,6 +51,9 @@ public class RPG_Room {
       if(roomType.equals("Trap") || roomType.equals("EnTrap") || roomType.equals("TrapTres") || roomType.equals("EnTrapTres")){ // add traps to trapped rooms
          addRandomTrap();
       }
+      if(roomType.equals("Tres") || roomType.equals("EnTres") || roomType.equals("TrapTres") || roomType.equals("EnTrapTres")){
+         addTreasure();
+      }
       if(roomType.equals("Boss")){
          addRandomBoss();
       }
@@ -68,6 +71,9 @@ public class RPG_Room {
          if(roomType.equals("Trap") || roomType.equals("EnTrap") || roomType.equals("TrapTres") || roomType.equals("EnTrapTres")){
             addRandomTrap();
          }
+      }
+      if(roomType.equals("Tres") || roomType.equals("EnTres") || roomType.equals("TrapTres") || roomType.equals("EnTrapTres")){
+         addTreasure();
       }
       if(roomType.equals("Boss")){
          addRandomBoss(difficultyOverride);
@@ -235,6 +241,10 @@ public class RPG_Room {
          boss = new RPG_Enemy(RPG_Enemies_List.BOSSDUMMY);
       }
       objects.add(boss);
+   }
+   
+   public void addTreasure(){
+      objects.add(new RPG_Treasure());
    }
    
    public String getDialogue() {

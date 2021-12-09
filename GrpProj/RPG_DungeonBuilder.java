@@ -13,8 +13,11 @@ public class RPG_DungeonBuilder{
          for(int j = 1; j <= levelLength; j++){ // populate all dungeon rooms
             int idNo = (i-1)*levelLength + j;
             if(j == levelLength){
-               cur.unlockExit("E");
+               cur.setUp(new RPG_Room(idNo+"n_Shop")); // add shop room to the north
+               cur.unlockExit("N");
+               System.out.println("DEBUG - Room ID = " + cur.getUp().getID());
                cur.setRight(new RPG_Room(idNo+"_Boss")); // add boss room
+               cur.unlockExit("E");
                cur = cur.getRight();
                if(i == levels){ // are we in the VERY last room?
                   cur.setFinalRoom();
@@ -24,7 +27,7 @@ public class RPG_DungeonBuilder{
             } else { 
                cur.unlockExit("E");
                // randomize next room's contents
-               cur.setRight(new RPG_Room(idNo+"_"+getRandomRoomType()));
+               cur.setRight(new RPG_Room(idNo+"_"+getRandomRoomType_NormalPath()));
                cur = cur.getRight();
                cur.unlockExit("W");
                // System.out.println(cur.getID());
@@ -32,8 +35,10 @@ public class RPG_DungeonBuilder{
                boolean north = branch();
                boolean south = branch();
                if(north){
+                  RPG_Room northbranch = new RPG_Room(idNo+"n_"+getRandomRoomType_BranchPath());
+                  cur.setUp(northbranch);
                   cur.unlockExit("N");
-                  RPG_Room northbranch = new RPG_Room(idNo+"n_"+getRandomRoomType());
+                  northbranch.setDown(cur);
                   northbranch.unlockExit("S");
                   if(cur.getLeft() != null && cur.getLeft().getUp() != null){ // backtrack linking for north branch
                      cur.getLeft().getUp().unlockExit("E");
@@ -44,8 +49,10 @@ public class RPG_DungeonBuilder{
                   // System.out.println(northbranch.getID());
                }
                if(south){
+                  RPG_Room southbranch = new RPG_Room(idNo+"s_"+getRandomRoomType_BranchPath());
+                  cur.setDown(southbranch);
                   cur.unlockExit("S");
-                  RPG_Room southbranch = new RPG_Room(idNo+"s_"+getRandomRoomType());
+                  southbranch.setUp(cur);
                   southbranch.unlockExit("N");
                   if(cur.getLeft() != null && cur.getLeft().getDown() != null){ // backtrack linking for south branch
                      cur.getLeft().getDown().unlockExit("E");
@@ -68,25 +75,30 @@ public class RPG_DungeonBuilder{
          for(int j = 1; j <= levelLength; j++){ // populate all dungeon rooms
             int idNo = (i-1)*levelLength + j;
             if(j == levelLength){
+               cur.setUp(new RPG_Room(idNo+"n_Shop")); // add shop room to the north
+               cur.unlockExit("N");
+               System.out.println("DEBUG - Room ID = " + cur.getUp().getID());
+               cur.setRight(new RPG_Room(idNo+"_Boss")); // add boss room
                cur.unlockExit("E");
-               cur.setRight(new RPG_Room(idNo+"_Boss", difficultyOverride)); // add boss room
                cur = cur.getRight();
-               if(i == levels-1){ // are we in the VERY last room?
+               if(i == levels){ // are we in the VERY last room?
                   cur.setFinalRoom();
                }
                cur.unlockExit("W");
                System.out.println("DEBUG - Room ID = " + cur.getID());
             } else { 
                cur.unlockExit("E");
-               cur.setRight(new RPG_Room(idNo+"_"+getRandomRoomType(),difficultyOverride));
+               cur.setRight(new RPG_Room(idNo+"_"+getRandomRoomType_NormalPath(),difficultyOverride));
                cur = cur.getRight();
                cur.unlockExit("W");
                System.out.println("DEBUG - Room ID = " + cur.getID());
                boolean north = branch();
                boolean south = branch();
                if(north){
+                  RPG_Room northbranch = new RPG_Room(idNo+"n_"+getRandomRoomType_BranchPath(),difficultyOverride);
+                  cur.setUp(northbranch);
                   cur.unlockExit("N");
-                  RPG_Room northbranch = new RPG_Room(idNo+"n_"+getRandomRoomType(),difficultyOverride);
+                  northbranch.setDown(cur);
                   northbranch.unlockExit("S");
                   if(cur.getLeft() != null && cur.getLeft().getUp() != null){
                      cur.getLeft().getUp().unlockExit("E");
@@ -97,8 +109,10 @@ public class RPG_DungeonBuilder{
                  System.out.println("DEBUG - Room ID = " + northbranch.getID());
                }
                if(south){
+                  RPG_Room southbranch = new RPG_Room(idNo+"s_"+getRandomRoomType_BranchPath(),difficultyOverride);
+                  cur.setDown(southbranch);
                   cur.unlockExit("S");
-                  RPG_Room southbranch = new RPG_Room(idNo+"s_"+getRandomRoomType(),difficultyOverride);
+                  southbranch.setUp(cur);
                   southbranch.unlockExit("N");
                   if(cur.getLeft() != null && cur.getLeft().getDown() != null){ 
                      cur.getLeft().getDown().unlockExit("E");
@@ -118,6 +132,19 @@ public class RPG_DungeonBuilder{
    private boolean branch(){ return (int)(Math.random()*2) == 0; }
    private String getRandomRoomType(){
       String[] roomTypes = {"En","Trap","Tres","EnTrap","EnTres","TrapTres","EnTrapTres"};
+      int index = (int)(Math.random()*roomTypes.length);
+      return roomTypes[index];
+   }
+   private String getRandomRoomType_NormalPath(){
+      String[] roomTypes = {"Empty","En"}; // only empty and enemy rooms on the normal path. ratio is 5:1 for enemy-normal
+      int index = (int)(Math.random()*6);
+      if(index == 0){ // empty
+         return roomTypes[index];
+      }
+      return roomTypes[1]; // enemy room
+   }
+   private String getRandomRoomType_BranchPath(){
+      String[] roomTypes = {"Tres","EnTres","TrapTres","EnTrapTres"}; // all branching paths have treasure, but may have additional threats
       int index = (int)(Math.random()*roomTypes.length);
       return roomTypes[index];
    }

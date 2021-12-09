@@ -31,10 +31,25 @@ public class RPG_Dungeon{
       printRoomDesc();
       System.out.println("What will you do?");
       String[] action = input.nextLine().split(" "); // split the input into a series of words
+      if(action.equals("Q")){ System.exit(0); } // QUIT option
       if(contains(action,"inventory")){ // check inventory
          player.printInventory();
+      } else if(contains(action,"treasure") || contains(action,"open") || contains(action,"chest")){
+         boolean openSuccessful = false;
+         for(RPG_Interactable i : DUNGEON_ROOM_CURRENT.getObjects()){
+            if(i instanceof RPG_Treasure){
+               RPG_Treasure tres = (RPG_Treasure)i;
+               tres.interactionEvent(player);
+               openSuccessful = true;
+            }
+         }
+         if(!openSuccessful){
+            System.out.println("You tried to open a treasure chest... but there were no chests to open!");
+         }
       } else if(contains(action, "hp") || contains(action, "health")){ // check xp
          System.out.println("Your current HP is [" + player.getHP() + "/" + player.getMaxHP() + "].");
+      } else if(contains(action, "gp") || contains(action, "gold") || contains(action, "money")){ // check xp
+         System.out.println("You currently have " + player.getGP() + " GP.");
       } else if(contains(action, "xp")){ // check xp
          System.out.println("You currently have a total of " + player.getTotalXP() + " XP!");
       } else if(contains(action, "ac")) { // check armor class
@@ -63,6 +78,8 @@ public class RPG_Dungeon{
          } else {
             System.out.println("No valid direction detected!");
          }
+      } else if(contains(action,"die")){
+         player.die(); // funney :)
       } else {
          System.out.println("No valid action detected!");
       }
@@ -85,7 +102,9 @@ public class RPG_Dungeon{
    
    public void loadRoomContents() throws IOException{
       for(RPG_Interactable i : DUNGEON_ROOM_CURRENT.getObjects()){
-         i.interactionEvent();
+         if(!(i instanceof RPG_Treasure)){
+            i.interactionEvent();
+         }
          if(i instanceof RPG_Trap){
             RPG_Trap trap = (RPG_Trap)i;
             trap.trigger(player); // triggers a trap attack. the trigger method itself handles disabled traps.
@@ -152,6 +171,9 @@ public class RPG_Dungeon{
       } else if (doorW){ // W
          System.out.println("There is a door to the west.");
       }
+      if(DUNGEON_ROOM_CURRENT.getType().equals("Tres") || DUNGEON_ROOM_CURRENT.getType().equals("EnTres") || DUNGEON_ROOM_CURRENT.getType().equals("TrapTres") || DUNGEON_ROOM_CURRENT.getType().equals("EnTrapTres")){
+         System.out.println("A treasure chest lies on the ground.");
+      }
       System.out.println(DUNGEON_ROOM_CURRENT.getDialogue());
    }
    
@@ -216,7 +238,7 @@ public class RPG_Dungeon{
    }
    
    
-  public static void combat(RPG_Player player, RPG_Enemy enemy) throws IOException{
+  public void combat(RPG_Player player, RPG_Enemy enemy) throws IOException{
       int playerInit = player.initiative(); // roll initiative for the player
       int enInit = enemy.initiative(); // roll initiative for the enemy
       boolean playerFirst = playerInit >= enInit; // compare initiative scores
@@ -246,7 +268,9 @@ public class RPG_Dungeon{
                }
                try{
                   actionSelected = true;
-                  selection = Integer.parseInt(input.nextLine());
+                  String inp = input.nextLine();
+                  if(inp.equals("Q")){ System.exit(0); } // QUIT option
+                  selection = Integer.parseInt(inp);
                   if((spareRange && selection > actions.size()) || (!spareRange && selection >= actions.size())){ // overflow handler
                      throw new Exception();
                   }
@@ -258,12 +282,17 @@ public class RPG_Dungeon{
             }
             if(selection != actable.size()){ // any fight option selected
                RPG_Action a = actable.get(selection);
-               a.act(player, enemy);
-               if(a.getName().equals("Dragon Breath")){
-                  player.useBreath(); // expend per-fight breath weapon use
-               }
-               if(!a.getName().equals("Hide")){ // all attacks except for hiding reveal the player's location to the enemy
-                  player.unhide();
+               if(contains(a.getName().split(" "), "Potion")){
+                  a.act(player,player); // heal SELF
+                  player.useItem(a.getName()); // remove expendable items after use
+               } else {
+                  a.act(player, enemy);
+                  if(a.getName().equals("Dragon Breath")){
+                     player.useBreath(); // expend per-fight breath weapon use
+                  }
+                  if(!a.getName().equals("Hide")){ // all attacks except for hiding reveal the player's location to the enemy
+                     player.unhide();
+                  }
                }
             } else { // spare selected
                enemy.pacify();

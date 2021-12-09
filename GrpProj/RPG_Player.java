@@ -32,8 +32,8 @@ public class RPG_Player extends RPG_Character{
    
    private boolean pacifist = true; // has the character spared all enemies so far?
    private boolean hidden = false; // for rogues- is the character currently hidden?
-   private static int level = 1;
-   private static int totalXP = 0;
+   private int level = 1;
+   private int totalXP = 0;
    private RPG_Race pcRace = new RPG_Race();
    private RPG_Class pcClass = new RPG_Class();
    
@@ -88,14 +88,17 @@ public class RPG_Player extends RPG_Character{
       registerOptionalRaceFeatures(); // handle optional race features
       loadArmorClass();
    }
+   
+   // Post-combat methods
    public int getTotalXP(){ return totalXP; }
-   public void gainXP(int toAdd){
+   public void gainXP(int toAdd){ // gain experience
       this.totalXP += toAdd;
-      // add leveling here
+      // Levelup detection
    }
    
    private void loadArmorClass(){  // load unarmored defense for monk/barbarian classes or armor for classes that start with it
       int unarmoredDefense = 10 + RPG_Dice.getModifier(super.getStats()[1]);
+      int shieldBonus = 0;
       if(pcClass.getName().equals("Monk")){
          unarmoredDefense = 10 + RPG_Dice.getModifier(super.getStats()[1]) + RPG_Dice.getModifier(super.getStats()[4]);
       } else if(pcClass.getName().equals("Barbarian")){
@@ -111,7 +114,14 @@ public class RPG_Player extends RPG_Character{
                super.setAC(newAC);
             }
          }
+         if(i instanceof RPG_Shield){
+            int shielding = ((RPG_Shield)i).getACBonus();
+            if(shielding > shieldBonus){
+               shieldBonus = shielding;
+            }
+         }
       }
+      super.setAC(super.getAC() + shieldBonus); // apply shield bonus
    }
    
    private int largestItemIndex(List<Integer> set){
@@ -278,6 +288,12 @@ public class RPG_Player extends RPG_Character{
       hidden = false;
    }
    
+   public void die(){
+      System.out.println("You died!");
+      System.out.println("GAME OVER");
+      System.exit(0);
+   }
+   
    public void takeDamage(int damage){ // damage override to account for half-orcs being epic
       if(getCurrentHP() - damage <= 0 && RPG_Optional_Race_Features.relentless && !RPG_Optional_Race_Features.relentlessUsed){
          System.out.println(getName() + " did not succumb!");
@@ -287,16 +303,14 @@ public class RPG_Player extends RPG_Character{
          setCurrentHP(getCurrentHP() - damage);
       }
       if(getHP() <= 0){ // player loss quits game
-         System.out.println("You died!");
-         System.out.println("GAME OVER");
-         System.exit(0);
+         die();
       }
    }
    
+   // Pacifism-related methods
    public boolean isPacifist(){ // has the player killed NO enemies?
       return this.pacifist;
    }
-   
    public void sin(){ // called if an enemy is killed. sets the pacifist field to false
       this.pacifist = false;
    }

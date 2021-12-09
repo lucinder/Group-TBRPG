@@ -3,7 +3,7 @@
 @file RPG_Enemy.java
 ENEMY class
 Handles deciding a proficiency bonus based on CR
-To be added: action randomization (selection) and execution in-battle
+The xp map is really finicky sometimes. Yell at it until it works, I say.
 **/
 import java.util.ArrayList;
 public class RPG_Enemy extends RPG_Character{
@@ -14,8 +14,9 @@ public class RPG_Enemy extends RPG_Character{
    public RPG_Enemy(){super(); defaultSettings();}
    public RPG_Enemy(RPG_Enemy toCopy){ // copy constructor
       super(toCopy.getName(), toCopy.getMaxHP(), toCopy.getStats(), toCopy.getAC(), toCopy.getActionsArray(), toCopy.getInventoryArray());
-      defaultSettings();
+      // defaultSettings();
       this.XP = toCopy.getXP();
+      setProficiencyBonus(this.getProficiencyBonus());
       this.isBoss = toCopy.getIfBoss();
       setDialogue("A wild " + toCopy.getName() + " appeared!");
       if(this.isBoss){
@@ -24,26 +25,30 @@ public class RPG_Enemy extends RPG_Character{
    }
    public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, int XP){
       super(name, hpMax, stats, AC, actions);
-      defaultSettings();
+      // defaultSettings();
       this.XP = XP;
+      setProficiencyBonus(this.getProficiencyBonus());
       setDialogue("A wild " + name + " appeared!");
    }
    public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Item[] inventory, int XP){
       super(name, hpMax, stats, AC, inventory);
-      defaultSettings();
+      // defaultSettings();
       this.XP = XP;
+      setProficiencyBonus(this.getProficiencyBonus());
       setDialogue("A wild " + name + " appeared!");
    }
    public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, int XP){
       super(name, hpMax, stats, AC, actions, inventory);
-      defaultSettings();
+      // defaultSettings();
       this.XP = XP;
+      setProficiencyBonus(this.getProficiencyBonus());
       setDialogue("A wild " + name + " appeared!");
    }
    public RPG_Enemy(String name, int hpMax, int[] stats, int AC, RPG_Action[] actions, RPG_Item[] inventory, int XP, boolean isBoss){
       super(name, hpMax, stats, AC, actions, inventory);
-      defaultSettings();
+      // defaultSettings();
       this.XP = XP;
+      setProficiencyBonus(this.getProficiencyBonus());
       this.isBoss = isBoss;
       setDialogue("A wild " + name + " appeared!");
       // System.out.println("TEST- is boss? " + this.isBoss);
@@ -54,6 +59,7 @@ public class RPG_Enemy extends RPG_Character{
    private void defaultSettings(){ // sets all fields to their defaults. mostly for debugging
       this.xpmap = new RPG_XPMap();
       this.XP = 10;
+      setProficiencyBonus(this.getProficiencyBonus());
       this.isBoss = false;
       this.pacified = false;
       loadInventory(); // inventory loading must be done AFTER the xp map is added so that proficiency bonuses can be calculated!
@@ -61,6 +67,7 @@ public class RPG_Enemy extends RPG_Character{
    public boolean getIfBoss(){ return isBoss; }
    public int getXP(){ return this.XP; }
    public double getCR(){ 
+      this.xpmap = new RPG_XPMap();
       System.out.println("DEBUG- XP = " + this.XP+", so CR = " + xpmap.map.get(this.XP));
       return (xpmap.map.get(this.XP));
    }

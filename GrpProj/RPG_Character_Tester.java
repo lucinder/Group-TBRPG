@@ -93,7 +93,7 @@ public class RPG_Character_Tester{
       int AC = input.nextInt();
       System.out.println("The AC for the following rolls is " + AC);
       for(RPG_Character.RPG_Action a : player.getActions()){
-         a.say(player.getName());
+         a.say(player.getName(), "Dummy", AC);
       }
    }
 }

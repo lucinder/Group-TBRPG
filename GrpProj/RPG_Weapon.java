@@ -53,6 +53,14 @@ public class RPG_Weapon extends RPG_Item{
       this.ranged = ranged;
       this.magicBonus = magicBonus;
    }
+   public RPG_Weapon(String name, int quantity, int value, int[] damageDice, boolean finesse, boolean ranged, int magicBonus, String damageType){
+      super(name, quantity, value);
+      this.damageDice = damageDice;
+      this.damageType = damageType;
+      this.finesse = finesse;
+      this.ranged = ranged;
+      this.magicBonus = magicBonus;
+   }
    // getters/setters
    public boolean isFinesse(){
       return finesse;
@@ -101,7 +109,7 @@ public class RPG_Weapon extends RPG_Item{
    }
    // tostring
    public String toString(){
-      return super.toString() + "\nDamage: " + getDamage();
+      return super.toString() + "\nDeals " + getDamage() + " " + getDamageType() + " per hit.";
    }
    public int compareTo(RPG_Weapon other){
       double avgThis = averageDamage();
